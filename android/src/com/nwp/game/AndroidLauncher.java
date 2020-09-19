@@ -15,6 +15,5 @@ public class AndroidLauncher extends AndroidApplication {
 		config.useCompass = false;
 		config.useGyroscope = false;
 		initialize(new Balls(), config);
-		/* ЫЫЫЫЫ */
 	}
 }
