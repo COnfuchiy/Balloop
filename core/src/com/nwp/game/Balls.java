@@ -65,6 +65,12 @@ public class Balls extends ApplicationAdapter {
 			ball.set_velocity();
 			ball.update();
 			ball.render(batch);
+			if (ShootBall!=null)
+				if (ball.ballSprite.getBoundingRectangle().overlaps(ShootBall.ballSprite.getBoundingRectangle())){
+					balls.removeValue(ball,false);
+					ShootBall = null;
+				}
+
 		}
 		if (arrow_sprite!=null)
 			arrow_sprite.draw(batch);
@@ -78,12 +84,13 @@ public class Balls extends ApplicationAdapter {
 		if (Gdx.input.isTouched()) {
 			if (ShootBall!=null){
 				Vector2 center = new Vector2(ShootBall.position.x+ball.ballSprite.getWidth()/2, ShootBall.position.y+ball.ballSprite.getHeight()/2);
-				Vector2 point1 = new Vector2(touch_x,touch_y);
+				Vector2 point1 = new Vector2(touch_x + 2 * (center.x - touch_x),touch_y + 2 * (center.y - touch_y));
 				//arrow_sprite.setRotation(angle-90);
 				ShapeRenderer sr = new ShapeRenderer();
 				sr.setColor(Color.BLACK);
-				sr.begin(ShapeRenderer.ShapeType.Line);
-				sr.line(center.x, center.y, point1.x, point1.y);
+				sr.begin(ShapeRenderer.ShapeType.Filled);
+				sr.rectLine(center.x, center.y, point1.x, point1.y, 10);
+				//System.out.println(Float.toString(point1.x) + " " + Float.toString(point1.y));
 				sr.end();
 			}
 
@@ -109,13 +116,17 @@ public class Balls extends ApplicationAdapter {
 			}
 			@Override
 			public boolean touchUp (int x, int y, int pointer, int button) {
-				ShootBall = null;
+				Vector2 center = new Vector2(ShootBall.position.x+ShootBall.ballSprite.getWidth()/2, ShootBall.position.y+ShootBall.ballSprite.getHeight()/2);
+				Vector2 dir = new Vector2();
+				Vector2 touch = new Vector2(touch_x,touch_y);
+				dir.set(touch).sub(center).nor();
+				ShootBall.velocity.set(dir.rotate(180).scl(8,8));
 				return false;
 			}
 			@Override
 			public boolean touchDragged (int x, int y, int pointer) {
 				touch_x = x;
-				touch_y = y;
+				touch_y = (int)height - y;
 				return false;
 			}
 		});
