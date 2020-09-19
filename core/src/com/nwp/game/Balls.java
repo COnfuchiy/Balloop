@@ -84,7 +84,7 @@ public class Balls extends ApplicationAdapter {
 				arrow_Texture = new Texture(Gdx.files.internal("arrow.png"));
 				arrow_sprite = new Sprite(arrow_Texture);
 				arrow_sprite.setSize(arrow_sprite.getWidth(), arrow_sprite.getHeight());
-				arrow_sprite.setPosition(touchPos.x-arrow_sprite.getWidth(), touchPos.y);
+				arrow_sprite.setPosition(touchPos.x, touchPos.y-arrow_sprite.getHeight());
 				arrow_sprite.setOrigin(arrow_sprite.getWidth()/2, arrow_sprite.getHeight()/2);
 				return false;
 			}
@@ -97,17 +97,12 @@ public class Balls extends ApplicationAdapter {
 			public boolean touchDragged (int x, int y, int pointer) {
 				Vector2 center = new Vector2(ShootBall.position.x+ball.ballSprite.getWidth()/2, ShootBall.position.y+ball.ballSprite.getHeight()/2);
 				Vector2 point1 = new Vector2(x,y);
-				Vector2 point2 = new Vector2(x, center.y);
 
 				point1.sub(center).nor();
-				point2.sub(center).nor();
 
-				float angle = (MathUtils.atan2(point1.y, point1.x) - MathUtils.atan2(point2.y, point2.x));
+				float angle = MathUtils.atan2(point1.x,point1.y);
 				angle *= MathUtils.radiansToDegrees;
-				if (angle<-180)
-					arrow_sprite.setRotation(270+angle);
-				else
-					arrow_sprite.setRotation(angle);
+				arrow_sprite.setRotation(angle-90);
 				System.out.println(Float.toString(arrow_sprite.getRotation()) +" ^^ "+ Integer.toString(x) +" ^^ "+ Integer.toString(y));
 				return false;
 			}
