@@ -3,17 +3,21 @@ package com.nwp.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nwp.game.objects.Ball;
+
+import jdk.nashorn.internal.objects.Global;
 
 public class Balls extends ApplicationAdapter {
 	Array<Ball> balls;
@@ -23,6 +27,8 @@ public class Balls extends ApplicationAdapter {
 	static Texture ballTexture; // текстура для мяча
 	static Texture arrow_Texture;
 	static Sprite arrow_sprite;
+	int touch_x;
+	int touch_y;
 	OrthographicCamera camera;
 	long last_ball;
 	float height;
@@ -69,6 +75,19 @@ public class Balls extends ApplicationAdapter {
 		if(TimeUtils.nanoTime() - last_ball > 460000000)
 			spawn_ball();
 		batch.end();
+		if (Gdx.input.isTouched()) {
+			if (ShootBall!=null){
+				Vector2 center = new Vector2(ShootBall.position.x+ball.ballSprite.getWidth()/2, ShootBall.position.y+ball.ballSprite.getHeight()/2);
+				Vector2 point1 = new Vector2(touch_x,touch_y);
+				//arrow_sprite.setRotation(angle-90);
+				ShapeRenderer sr = new ShapeRenderer();
+				sr.setColor(Color.BLACK);
+				sr.begin(ShapeRenderer.ShapeType.Line);
+				sr.line(center.x, center.y, point1.x, point1.y);
+				sr.end();
+			}
+
+		}
 		Gdx.input.setInputProcessor(new InputAdapter(){
 			@Override
 			public boolean touchDown (int x, int y, int pointer, int button) {
@@ -81,11 +100,11 @@ public class Balls extends ApplicationAdapter {
 				ShootBall.ballSprite.setSize(ball.ballSprite.getWidth(), ball.ballSprite.getHeight());
 				ShootBall.position.set(touchPos.x, touchPos.y);
 				ShootBall.velocity.set(0,0);
-				arrow_Texture = new Texture(Gdx.files.internal("arrow.png"));
-				arrow_sprite = new Sprite(arrow_Texture);
-				arrow_sprite.setSize(arrow_sprite.getWidth(), arrow_sprite.getHeight());
-				arrow_sprite.setPosition(touchPos.x, touchPos.y-arrow_sprite.getHeight());
-				arrow_sprite.setOrigin(arrow_sprite.getWidth()/2, arrow_sprite.getHeight()/2);
+//				arrow_Texture = new Texture(Gdx.files.internal("arrow.png"));
+//				arrow_sprite = new Sprite(arrow_Texture);
+//				arrow_sprite.setSize(arrow_sprite.getWidth(), arrow_sprite.getHeight());
+//				arrow_sprite.setPosition(touchPos.x, touchPos.y-arrow_sprite.getHeight());
+//				arrow_sprite.setOrigin(arrow_sprite.getWidth()/2, arrow_sprite.getHeight()/2);
 				return false;
 			}
 			@Override
@@ -95,15 +114,8 @@ public class Balls extends ApplicationAdapter {
 			}
 			@Override
 			public boolean touchDragged (int x, int y, int pointer) {
-				Vector2 center = new Vector2(ShootBall.position.x+ball.ballSprite.getWidth()/2, ShootBall.position.y+ball.ballSprite.getHeight()/2);
-				Vector2 point1 = new Vector2(x,y);
-
-				point1.sub(center).nor();
-
-				float angle = MathUtils.atan2(point1.x,point1.y);
-				angle *= MathUtils.radiansToDegrees;
-				arrow_sprite.setRotation(angle-90);
-				System.out.println(Float.toString(arrow_sprite.getRotation()) +" ^^ "+ Integer.toString(x) +" ^^ "+ Integer.toString(y));
+				touch_x = x;
+				touch_y = y;
 				return false;
 			}
 		});
