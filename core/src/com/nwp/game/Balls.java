@@ -82,16 +82,31 @@ public class Balls extends ApplicationAdapter {
 			spawn_ball();
 		batch.end();
 		if (Gdx.input.isTouched()) {
-			if (ShootBall!=null){
+			if (ShootBall!=null) {
 				Vector2 center = new Vector2(ShootBall.position.x+ball.ballSprite.getWidth()/2, ShootBall.position.y+ball.ballSprite.getHeight()/2);
-				Vector2 point1 = new Vector2(touch_x + 2 * (center.x - touch_x),touch_y + 2 * (center.y - touch_y));
+				//Vector2 point1 = new Vector2(touch_x + 2 * (center.x - touch_x),touch_y + 2 * (center.y - touch_y));
+				Vector2 point1 = new Vector2(touch_x,touch_y);
+				Vector2 point2 = new Vector2(center.x + 1, center.y);
+
+				point1.sub(center).nor();
+				point2.sub(center).nor();
+
+				float angle = (MathUtils.atan2(point1.y, point1.x) - MathUtils.atan2(point2.y, point2.x));
+				//angle *= MathUtils.radiansToDegrees;
+
+				Vector2 point3 = new Vector2(center.x + 300 * MathUtils.cos(MathUtils.PI - angle), center.y - 300 * MathUtils.sin(MathUtils.PI - angle));
+
+				System.out.println(point3.toString());
+
+				//System.out.println(point1.x/point1.y);
 				//arrow_sprite.setRotation(angle-90);
 				ShapeRenderer sr = new ShapeRenderer();
 				sr.setColor(Color.BLACK);
 				sr.begin(ShapeRenderer.ShapeType.Filled);
-				sr.rectLine(center.x, center.y, point1.x, point1.y, 10);
+				sr.rectLine(center.x, center.y, point3.x, point3.y, 10);
 				//System.out.println(Float.toString(point1.x) + " " + Float.toString(point1.y));
 				sr.end();
+
 			}
 
 		}
@@ -120,7 +135,7 @@ public class Balls extends ApplicationAdapter {
 				Vector2 dir = new Vector2();
 				Vector2 touch = new Vector2(touch_x,touch_y);
 				dir.set(touch).sub(center).nor();
-				ShootBall.velocity.set(dir.rotate(180).scl(8,8));
+				ShootBall.velocity.set(dir.rotate(180).scl(12,12));
 				return false;
 			}
 			@Override
