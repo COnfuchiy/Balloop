@@ -78,13 +78,12 @@ public class Balls extends ApplicationAdapter {
 		if (Gdx.input.isTouched()) {
 			if (ShootBall!=null){
 				Vector2 center = new Vector2(ShootBall.position.x+ball.ballSprite.getWidth()/2, ShootBall.position.y+ball.ballSprite.getHeight()/2);
-				Vector2 point1 = new Vector2(touch_x + 2 * (center.x - touch_x),touch_y + 2 * (center.y - touch_y));
+				Vector2 point1 = new Vector2(touch_x,touch_y);
 				//arrow_sprite.setRotation(angle-90);
 				ShapeRenderer sr = new ShapeRenderer();
 				sr.setColor(Color.BLACK);
-				sr.begin(ShapeRenderer.ShapeType.Filled);
-				sr.rectLine(center.x, center.y, point1.x, point1.y, 10);
-				//System.out.println(Float.toString(point1.x) + " " + Float.toString(point1.y));
+				sr.begin(ShapeRenderer.ShapeType.Line);
+				sr.line(center.x, center.y, point1.x, point1.y);
 				sr.end();
 			}
 
@@ -116,7 +115,7 @@ public class Balls extends ApplicationAdapter {
 			@Override
 			public boolean touchDragged (int x, int y, int pointer) {
 				touch_x = x;
-				touch_y = (int)height - y;
+				touch_y = y;
 				return false;
 			}
 		});
