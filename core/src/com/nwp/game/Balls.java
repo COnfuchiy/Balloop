@@ -17,19 +17,18 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nwp.game.objects.Ball;
 
-import jdk.nashorn.internal.objects.Global;
-
 public class Balls extends ApplicationAdapter {
 	Array<Ball> balls;
 	static Ball ShootBall;
 	SpriteBatch batch;
 	static Ball ball; // экземпляр мяча
 	static Texture ballTexture; // текстура для мяча
-	static Texture arrow_Texture;
-	static Sprite arrow_sprite;
+	static Texture second_ball;
+	Vector2 pos_insert;
 	int touch_x;
 	int touch_y;
 	OrthographicCamera camera;
+	boolean is_move_balls = true;
 	long last_ball;
 	float height;
 	float width;
@@ -63,48 +62,57 @@ public class Balls extends ApplicationAdapter {
 		batch.begin();
 		for(Ball ball: balls) {
 			ball.set_velocity();
-			ball.update();
+			if (is_move_balls)
+				ball.update();
 			ball.render(batch);
-			if (ShootBall!=null)
-				if (ball.ballSprite.getBoundingRectangle().overlaps(ShootBall.ballSprite.getBoundingRectangle())){
-					balls.removeValue(ball,false);
+			if (ShootBall!=null) {
+				if (is_move_balls && ball.ballSprite.getBoundingRectangle().overlaps(ShootBall.ballSprite.getBoundingRectangle())) {
+					is_move_balls = false;
+					pos_insert = new Vector2(ball.position);
+					int ball_pos = balls.indexOf(ball,false);
+					ShootBall.position.set(pos_insert.x,pos_insert.y);
+					ShootBall.ballSprite.setPosition(pos_insert.x,pos_insert.y);
+					ShootBall.velocity.set(0,0);
+					Ball new_ball = new Ball();
+					new_ball.ballSprite = new Sprite(second_ball);
+					new_ball.ballSprite.setSize(ball.ballSprite.getWidth(), ball.ballSprite.getHeight());
+					new_ball.position.set(ShootBall.position.x, ShootBall.position.y);
+					new_ball.set_velocity();
+					balls.insert(ball_pos,new_ball);
 					ShootBall = null;
+					for(int i = 0; i<balls.size;i++){
+						if (i<=ball_pos) {
+							Vector2 speed = new Vector2(balls.get(i).velocity);
+							balls.get(i).position.add(speed.scl(30,30));
+							balls.get(i).ballSprite.setPosition(balls.get(i).position.x,balls.get(i).position.y);
+						}
+					}
+					is_move_balls = true;
+					//balls.removeValue(ball, false);
+					//ShootBall = null;
 				}
-
+			}
 		}
-		if (arrow_sprite!=null)
-			arrow_sprite.draw(batch);
 		if (ShootBall!=null){
 			ShootBall.update();
 			ShootBall.render(batch);
 		}
-		if(TimeUtils.nanoTime() - last_ball > 460000000)
+		if(is_move_balls && TimeUtils.nanoTime() - last_ball > 460000000)
 			spawn_ball();
 		batch.end();
 		if (Gdx.input.isTouched()) {
 			if (ShootBall!=null) {
 				Vector2 center = new Vector2(ShootBall.position.x+ball.ballSprite.getWidth()/2, ShootBall.position.y+ball.ballSprite.getHeight()/2);
-				//Vector2 point1 = new Vector2(touch_x + 2 * (center.x - touch_x),touch_y + 2 * (center.y - touch_y));
 				Vector2 point1 = new Vector2(touch_x,touch_y);
 				Vector2 point2 = new Vector2(center.x + 1, center.y);
-
 				point1.sub(center).nor();
 				point2.sub(center).nor();
-
 				float angle = (MathUtils.atan2(point1.y, point1.x) - MathUtils.atan2(point2.y, point2.x));
-				//angle *= MathUtils.radiansToDegrees;
-
 				Vector2 point3 = new Vector2(center.x + 300 * MathUtils.cos(MathUtils.PI - angle), center.y - 300 * MathUtils.sin(MathUtils.PI - angle));
-
-				System.out.println(point3.toString());
-
-				//System.out.println(point1.x/point1.y);
-				//arrow_sprite.setRotation(angle-90);
 				ShapeRenderer sr = new ShapeRenderer();
 				sr.setColor(Color.BLACK);
 				sr.begin(ShapeRenderer.ShapeType.Filled);
 				sr.rectLine(center.x, center.y, point3.x, point3.y, 10);
-				//System.out.println(Float.toString(point1.x) + " " + Float.toString(point1.y));
 				sr.end();
 
 			}
@@ -117,8 +125,8 @@ public class Balls extends ApplicationAdapter {
 				touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
 				camera.unproject(touchPos);
 				ShootBall = new Ball();
-				ballTexture = new Texture(Gdx.files.internal("ball.png"));
-				ShootBall.ballSprite = new Sprite(ballTexture);
+				second_ball = new Texture(Gdx.files.internal("ball_1.png"));
+				ShootBall.ballSprite = new Sprite(second_ball);
 				ShootBall.ballSprite.setSize(ball.ballSprite.getWidth(), ball.ballSprite.getHeight());
 				ShootBall.position.set(touchPos.x, touchPos.y);
 				ShootBall.velocity.set(0,0);
@@ -152,6 +160,6 @@ public class Balls extends ApplicationAdapter {
 	public void dispose () {
 		batch.dispose();
 		ballTexture.dispose();
-		arrow_Texture.dispose();
+		second_ball.dispose();
 	}
 }
