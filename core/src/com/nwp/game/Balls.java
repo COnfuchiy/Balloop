@@ -24,6 +24,8 @@ public class Balls extends ApplicationAdapter {
 	static Ball ball; // экземпляр мяча
 	static Texture ballTexture; // текстура для мяча
 	static Texture second_ball;
+	static Vector2 cord_collapse;
+	static int pos_collapse = -1;
 	Vector2 pos_insert;
 	int touch_x;
 	int touch_y;
@@ -61,12 +63,27 @@ public class Balls extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
 		for(Ball ball: balls) {
-			ball.set_velocity();
-			if (is_move_balls)
+			if (is_move_balls){
+				ball.set_velocity();
 				ball.update();
+			}
+			else
+				if (pos_collapse!=-1 && ball.position.x < cord_collapse.x){
+					ball.update();
+					if (ball.position.y > cord_collapse.y){
+						System.out.println(cord_collapse.toString() + " " + ball.position.toString());
+						is_move_balls = true;
+						for(int i = pos_collapse; i<balls.size;i++){
+							balls.get(i).set_velocity();
+						}
+					}
+
+				}
 			ball.render(batch);
 			if (ShootBall!=null) {
-				if (is_move_balls && ball.ballSprite.getBoundingRectangle().overlaps(ShootBall.ballSprite.getBoundingRectangle())) {
+				if (is_move_balls &&
+						ball.ballSprite.getBoundingRectangle().overlaps(ShootBall.ballSprite.getBoundingRectangle()) &&
+						ShootBall.position.y<ball.position.y) {
 					is_move_balls = false;
 					pos_insert = new Vector2(ball.position);
 					int ball_pos = balls.indexOf(ball,false);
@@ -80,16 +97,47 @@ public class Balls extends ApplicationAdapter {
 					new_ball.set_velocity();
 					balls.insert(ball_pos,new_ball);
 					ShootBall = null;
-					for(int i = 0; i<balls.size;i++){
-						if (i<=ball_pos) {
-							Vector2 speed = new Vector2(balls.get(i).velocity);
-							balls.get(i).position.add(speed.scl(30,30));
-							balls.get(i).ballSprite.setPosition(balls.get(i).position.x,balls.get(i).position.y);
+					for(int i = ball_pos; i>=0;i--){
+						Vector2 speed = new Vector2(balls.get(i).velocity);
+						balls.get(i).position.add(speed.scl(30,30));
+						balls.get(i).ballSprite.setPosition(balls.get(i).position.x,balls.get(i).position.y);
+					}
+					new_ball = balls.get(ball_pos-1);
+					if (new_ball.ballSprite.getTexture().toString().equals("ball_1.png")){
+						new_ball = balls.get(ball_pos-2);
+						if (new_ball.ballSprite.getTexture().toString().equals("ball_1.png")){
+							pos_collapse = ball_pos-2;
+							cord_collapse = new Vector2(balls.get(ball_pos-2).position);
+							balls.removeRange(ball_pos-2,ball_pos);
+						}
+						else {
+							new_ball = balls.get(ball_pos+1);
+							if (new_ball.ballSprite.getTexture().toString().equals("ball_1.png")){
+								pos_collapse = ball_pos-1;
+								cord_collapse = new Vector2(balls.get(ball_pos-2).position);
+								balls.removeRange(ball_pos-1,ball_pos+1);
+							}
 						}
 					}
-					is_move_balls = true;
-					//balls.removeValue(ball, false);
-					//ShootBall = null;
+					else {
+						new_ball = balls.get(ball_pos+1);
+						if (new_ball.ballSprite.getTexture().toString().equals("ball_1.png")){
+							new_ball = balls.get(ball_pos+2);
+							if (new_ball.ballSprite.getTexture().toString().equals("ball_1.png")){
+								pos_collapse = ball_pos;
+								cord_collapse = new Vector2(balls.get(ball_pos-2).position);
+								balls.removeRange(ball_pos,ball_pos+2);
+							}
+						}
+					}
+					if (pos_collapse!=-1){
+						for(int i = pos_collapse+1; i>=0;i--){
+							Vector2 speed = new Vector2(balls.get(i).velocity);
+							balls.get(i).velocity.set(speed.rotate(180).scl(3,3));
+						}
+					}
+					else
+						is_move_balls = true;
 				}
 			}
 		}
