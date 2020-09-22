@@ -68,15 +68,14 @@ public class Balls extends ApplicationAdapter {
 				ball.update();
 			}
 			else
-				if (pos_collapse!=-1 && ball.position.x < cord_collapse.x){
-					ball.update();
-					if (ball.position.y > cord_collapse.y){
+				if (pos_collapse!=-1 && balls.indexOf(ball,false)<pos_collapse){
+					if (ball.position.x - cord_collapse.x<1){
 						System.out.println(cord_collapse.toString() + " " + ball.position.toString());
 						is_move_balls = true;
-						for(int i = pos_collapse; i<balls.size;i++){
-							balls.get(i).set_velocity();
-						}
+						cord_collapse = null;
+						pos_collapse = - 1;
 					}
+					ball.update();
 
 				}
 			ball.render(batch);
@@ -106,15 +105,15 @@ public class Balls extends ApplicationAdapter {
 					if (new_ball.ballSprite.getTexture().toString().equals("ball_1.png")){
 						new_ball = balls.get(ball_pos-2);
 						if (new_ball.ballSprite.getTexture().toString().equals("ball_1.png")){
-							pos_collapse = ball_pos-2;
-							cord_collapse = new Vector2(balls.get(ball_pos-2).position);
+							pos_collapse = ball_pos-3;
+							cord_collapse = new Vector2(balls.get(ball_pos).position);
 							balls.removeRange(ball_pos-2,ball_pos);
 						}
 						else {
 							new_ball = balls.get(ball_pos+1);
 							if (new_ball.ballSprite.getTexture().toString().equals("ball_1.png")){
-								pos_collapse = ball_pos-1;
-								cord_collapse = new Vector2(balls.get(ball_pos-2).position);
+								pos_collapse = ball_pos-2;
+								cord_collapse = new Vector2(balls.get(ball_pos+1).position);
 								balls.removeRange(ball_pos-1,ball_pos+1);
 							}
 						}
@@ -124,14 +123,15 @@ public class Balls extends ApplicationAdapter {
 						if (new_ball.ballSprite.getTexture().toString().equals("ball_1.png")){
 							new_ball = balls.get(ball_pos+2);
 							if (new_ball.ballSprite.getTexture().toString().equals("ball_1.png")){
-								pos_collapse = ball_pos;
-								cord_collapse = new Vector2(balls.get(ball_pos-2).position);
+								pos_collapse = ball_pos-1;
+								cord_collapse = new Vector2(balls.get(ball_pos+2).position);
 								balls.removeRange(ball_pos,ball_pos+2);
 							}
 						}
 					}
 					if (pos_collapse!=-1){
-						for(int i = pos_collapse+1; i>=0;i--){
+						pos_collapse++;
+						for(int i = pos_collapse; i>=0;i--){
 							Vector2 speed = new Vector2(balls.get(i).velocity);
 							balls.get(i).velocity.set(speed.rotate(180).scl(3,3));
 						}
