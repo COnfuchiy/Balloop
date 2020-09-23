@@ -21,6 +21,7 @@ import java.util.Random;
 
 public class Balls extends ApplicationAdapter {
 	Array<Ball> balls;
+	static int color_counter =0;
 	static Ball ShootBall;
 	SpriteBatch batch;
 	static Ball ball; // экземпляр мяча
@@ -39,7 +40,17 @@ public class Balls extends ApplicationAdapter {
 
 	private void spawn_ball(){
 		ball = new Ball();
-		ballTexture = new Texture(Gdx.files.internal("ball.png"));
+		if (color_counter<2)
+			ballTexture = new Texture(Gdx.files.internal("ball_2.png"));
+		else if (color_counter<4)
+			ballTexture = new Texture(Gdx.files.internal("ball_1.png"));
+		else {
+			ballTexture = new Texture(Gdx.files.internal("ball.png"));
+		}
+		if (color_counter==5)
+			color_counter=0;
+		else
+			color_counter++;
 		ball.ballSprite = new Sprite(ballTexture);
 		ball.ballSprite.setSize(ball.ballSprite.getWidth(), ball.ballSprite.getHeight());
 		ball.position.set(0, height-ball.ballSprite.getHeight());
@@ -72,7 +83,7 @@ public class Balls extends ApplicationAdapter {
 			else
 				if (pos_collapse!=-1 && balls.indexOf(ball,false)<pos_collapse){
 					if (ball.position.x - cord_collapse.x<1){
-						System.out.println(cord_collapse.toString() + " " + ball.position.toString());
+						System.out.println(String.valueOf(balls.indexOf(ball,false))+" "+ String.valueOf(pos_collapse));
 						Ball new_ball;
 						new_ball= balls.get(pos_collapse+1);
 						if (new_ball.ballSprite.getTexture().toString().equals(ball.ballSprite.getTexture().toString())){
@@ -87,9 +98,9 @@ public class Balls extends ApplicationAdapter {
 								new_ball= balls.get(right);
 							}while  (new_ball.ballSprite.getTexture().toString().equals(ball.ballSprite.getTexture().toString()));
 							if (right-left>=3){
-								pos_collapse = left;
-								cord_collapse = new Vector2(balls.get(left+2).position);
-								balls.removeRange(left,right);
+								pos_collapse = right-1;
+								cord_collapse = new Vector2(balls.get(left+1).position);
+								balls.removeRange(left+1,right-1);
 							}
 							else{
 								is_move_balls = true;
@@ -123,6 +134,7 @@ public class Balls extends ApplicationAdapter {
 					new_ball.position.set(ShootBall.position.x, ShootBall.position.y);
 					new_ball.set_velocity();
 					balls.insert(ball_pos,new_ball);
+					String shoot_tex = ShootBall.ballSprite.getTexture().toString();
 					ShootBall = null;
 					for(int i = ball_pos; i>=0;i--){
 						Vector2 speed = new Vector2(balls.get(i).velocity);
@@ -130,16 +142,16 @@ public class Balls extends ApplicationAdapter {
 						balls.get(i).ballSprite.setPosition(balls.get(i).position.x,balls.get(i).position.y);
 					}
 					new_ball = balls.get(ball_pos-1);
-					if (new_ball.ballSprite.getTexture().toString().equals("ball_1.png")){
+					if (new_ball.ballSprite.getTexture().toString().equals(shoot_tex)){
 						new_ball = balls.get(ball_pos-2);
-						if (new_ball.ballSprite.getTexture().toString().equals("ball_1.png")){
+						if (new_ball.ballSprite.getTexture().toString().equals(shoot_tex)){
 							pos_collapse = ball_pos-3;
 							cord_collapse = new Vector2(balls.get(ball_pos).position);
 							balls.removeRange(ball_pos-2,ball_pos);
 						}
 						else {
 							new_ball = balls.get(ball_pos+1);
-							if (new_ball.ballSprite.getTexture().toString().equals("ball_1.png")){
+							if (new_ball.ballSprite.getTexture().toString().equals(shoot_tex)){
 								pos_collapse = ball_pos-2;
 								cord_collapse = new Vector2(balls.get(ball_pos+1).position);
 								balls.removeRange(ball_pos-1,ball_pos+1);
@@ -148,9 +160,9 @@ public class Balls extends ApplicationAdapter {
 					}
 					else {
 						new_ball = balls.get(ball_pos+1);
-						if (new_ball.ballSprite.getTexture().toString().equals("ball_1.png")){
+						if (new_ball.ballSprite.getTexture().toString().equals(shoot_tex)){
 							new_ball = balls.get(ball_pos+2);
-							if (new_ball.ballSprite.getTexture().toString().equals("ball_1.png")){
+							if (new_ball.ballSprite.getTexture().toString().equals(shoot_tex)){
 								pos_collapse = ball_pos-1;
 								cord_collapse = new Vector2(balls.get(ball_pos+2).position);
 								balls.removeRange(ball_pos,ball_pos+2);
