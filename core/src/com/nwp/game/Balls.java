@@ -17,6 +17,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nwp.game.objects.Ball;
 
+import java.util.Random;
+
 public class Balls extends ApplicationAdapter {
 	Array<Ball> balls;
 	static Ball ShootBall;
@@ -71,9 +73,35 @@ public class Balls extends ApplicationAdapter {
 				if (pos_collapse!=-1 && balls.indexOf(ball,false)<pos_collapse){
 					if (ball.position.x - cord_collapse.x<1){
 						System.out.println(cord_collapse.toString() + " " + ball.position.toString());
-						is_move_balls = true;
-						cord_collapse = null;
-						pos_collapse = - 1;
+						Ball new_ball;
+						new_ball= balls.get(pos_collapse+1);
+						if (new_ball.ballSprite.getTexture().toString().equals(ball.ballSprite.getTexture().toString())){
+							int left = pos_collapse;
+							int right = pos_collapse;
+							do{
+								left--;
+								new_ball= balls.get(left);
+							}while (left > 0 && new_ball.ballSprite.getTexture().toString().equals(ball.ballSprite.getTexture().toString()));
+							do{
+								right++;
+								new_ball= balls.get(right);
+							}while  (new_ball.ballSprite.getTexture().toString().equals(ball.ballSprite.getTexture().toString()));
+							if (right-left>=3){
+								pos_collapse = left;
+								cord_collapse = new Vector2(balls.get(left+2).position);
+								balls.removeRange(left,right);
+							}
+							else{
+								is_move_balls = true;
+								cord_collapse = null;
+								pos_collapse = - 1;
+							}
+						}
+						else{
+							is_move_balls = true;
+							cord_collapse = null;
+							pos_collapse = - 1;
+						}
 					}
 					ball.update();
 
@@ -173,7 +201,7 @@ public class Balls extends ApplicationAdapter {
 				touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
 				camera.unproject(touchPos);
 				ShootBall = new Ball();
-				second_ball = new Texture(Gdx.files.internal("ball_1.png"));
+				second_ball = new Texture(Gdx.files.internal("ball_"+String.valueOf((int)(Math.random()*((2-1)+1))+1)+".png"));
 				ShootBall.ballSprite = new Sprite(second_ball);
 				ShootBall.ballSprite.setSize(ball.ballSprite.getWidth(), ball.ballSprite.getHeight());
 				ShootBall.position.set(touchPos.x, touchPos.y);
