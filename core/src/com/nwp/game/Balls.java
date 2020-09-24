@@ -98,8 +98,8 @@ public class Balls extends ApplicationAdapter {
 								new_ball= balls.get(right);
 							}while  (new_ball.ballSprite.getTexture().toString().equals(ball.ballSprite.getTexture().toString()));
 							if (right-left>=3){
-								pos_collapse = right-1;
-								cord_collapse = new Vector2(balls.get(left+1).position);
+								pos_collapse = left+1;
+								cord_collapse = new Vector2(balls.get(right-1).position);
 								balls.removeRange(left+1,right-1);
 							}
 							else{
