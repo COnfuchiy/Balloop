@@ -16,8 +16,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nwp.game.objects.Ball;
-
-import java.util.Random;
+import com.nwp.game.source.Path;
 
 public class Balls extends ApplicationAdapter {
 	Array<Ball> balls;
@@ -37,9 +36,10 @@ public class Balls extends ApplicationAdapter {
 	long last_ball;
 	float height;
 	float width;
+	Path path;
 
 	private void spawn_ball(){
-		ball = new Ball();
+		ball = new Ball(path);
 		if (color_counter<2)
 			ballTexture = new Texture(Gdx.files.internal("ball_2.png"));
 		else if (color_counter<4)
@@ -56,12 +56,19 @@ public class Balls extends ApplicationAdapter {
 		ball.position.set(0, height-ball.ballSprite.getHeight());
 		last_ball = TimeUtils.nanoTime();
 		balls.add(ball);
-		ball.velocity.set(0.9f, -1.9f);
+		ball.velocity.set(2, -2);
 	}
 
 	@Override
 	public void create () {
 		balls = new Array<Ball>();
+		Array<Vector2> velocity = new Array<Vector2>();
+		Array<Integer> velocity_iter = new Array<Integer>();
+		velocity.add(new Vector2(2, -2));
+		velocity.add(new Vector2(-3, -3));
+		velocity_iter.add(100);
+		velocity_iter.add(10000);
+		path = new Path(velocity, velocity_iter);
 		height = Gdx.graphics.getHeight();
 		width = Gdx.graphics.getWidth();
 		camera = new OrthographicCamera(width,height);// устанавливаем переменные высоты и ширины в качестве области просмотра нашей игры
@@ -128,7 +135,7 @@ public class Balls extends ApplicationAdapter {
 					ShootBall.position.set(pos_insert.x,pos_insert.y);
 					ShootBall.ballSprite.setPosition(pos_insert.x,pos_insert.y);
 					ShootBall.velocity.set(0,0);
-					Ball new_ball = new Ball();
+					Ball new_ball = new Ball(path);
 					new_ball.ballSprite = new Sprite(second_ball);
 					new_ball.ballSprite.setSize(ball.ballSprite.getWidth(), ball.ballSprite.getHeight());
 					new_ball.position.set(ShootBall.position.x, ShootBall.position.y);
@@ -173,7 +180,7 @@ public class Balls extends ApplicationAdapter {
 						pos_collapse++;
 						for(int i = pos_collapse; i>=0;i--){
 							Vector2 speed = new Vector2(balls.get(i).velocity);
-							balls.get(i).velocity.set(speed.rotate(180).scl(3,3));
+							balls.get(i).velocity.set(speed.rotate(180).scl(1.5f,1.5f));
 						}
 					}
 					else
@@ -212,7 +219,7 @@ public class Balls extends ApplicationAdapter {
 				Vector3 touchPos = new Vector3();
 				touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
 				camera.unproject(touchPos);
-				ShootBall = new Ball();
+				ShootBall = new Ball(path);
 				second_ball = new Texture(Gdx.files.internal("ball_"+String.valueOf((int)(Math.random()*((2-1)+1))+1)+".png"));
 				ShootBall.ballSprite = new Sprite(second_ball);
 				ShootBall.ballSprite.setSize(ball.ballSprite.getWidth(), ball.ballSprite.getHeight());
