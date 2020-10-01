@@ -28,6 +28,7 @@ public class Balls extends ApplicationAdapter {
 	static Texture second_ball;
 	static Vector2 cord_collapse;
 	static int pos_collapse = -1;
+	static int num_balls;
 	Vector2 pos_insert;
 	int touch_x;
 	int touch_y;
@@ -37,6 +38,27 @@ public class Balls extends ApplicationAdapter {
 	float height;
 	float width;
 	Path path;
+
+	public Balls(){
+		balls = new Array<Ball>();
+		num_balls = 12;
+		path = setup_path();
+	}
+
+	public Path setup_path(){
+		// in the future, work with db and files, but for now it is
+		Array<Vector2> velocity = new Array<>();
+		Array<Integer> velocity_iter = new Array<>();
+		velocity.add(new Vector2(2, -2));
+		velocity.add(new Vector2(2.2f, -2));
+		velocity.add(new Vector2(2.3f, -2));
+		velocity.add(new Vector2(2.5f, -2));
+		velocity_iter.add(100);
+		velocity_iter.add(200);
+		velocity_iter.add(300);
+		velocity_iter.add(400);
+		return new Path(velocity, velocity_iter,2);
+	}
 
 	private void spawn_ball(){
 		ball = new Ball(path);
@@ -57,18 +79,11 @@ public class Balls extends ApplicationAdapter {
 		last_ball = TimeUtils.nanoTime();
 		balls.add(ball);
 		ball.velocity.set(2, -2);
+		num_balls--;
 	}
 
 	@Override
 	public void create () {
-		balls = new Array<Ball>();
-		Array<Vector2> velocity = new Array<Vector2>();
-		Array<Integer> velocity_iter = new Array<Integer>();
-		velocity.add(new Vector2(2, -2));
-		velocity.add(new Vector2(-3, -3));
-		velocity_iter.add(100);
-		velocity_iter.add(10000);
-		path = new Path(velocity, velocity_iter);
 		height = Gdx.graphics.getHeight();
 		width = Gdx.graphics.getWidth();
 		camera = new OrthographicCamera(width,height);// устанавливаем переменные высоты и ширины в качестве области просмотра нашей игры
@@ -89,40 +104,41 @@ public class Balls extends ApplicationAdapter {
 			}
 			else
 				if (pos_collapse!=-1 && balls.indexOf(ball,false)<pos_collapse){
-					if (ball.position.x - cord_collapse.x<1){
-						System.out.println(String.valueOf(balls.indexOf(ball,false))+" "+ String.valueOf(pos_collapse));
-						Ball new_ball;
-						new_ball= balls.get(pos_collapse+1);
-						if (new_ball.ballSprite.getTexture().toString().equals(ball.ballSprite.getTexture().toString())){
-							int left = pos_collapse;
-							int right = pos_collapse;
-							do{
-								left--;
-								new_ball= balls.get(left);
-							}while (left > 0 && new_ball.ballSprite.getTexture().toString().equals(ball.ballSprite.getTexture().toString()));
-							do{
-								right++;
-								new_ball= balls.get(right);
-							}while  (new_ball.ballSprite.getTexture().toString().equals(ball.ballSprite.getTexture().toString()));
-							if (right-left>=3){
-								pos_collapse = left+1;
-								cord_collapse = new Vector2(balls.get(right-1).position);
-								balls.removeRange(left+1,right-1);
-							}
-							else{
-								is_move_balls = true;
-								cord_collapse = null;
-								pos_collapse = - 1;
-							}
-						}
-						else{
-							is_move_balls = true;
-							cord_collapse = null;
-							pos_collapse = - 1;
-						}
+					if (ball.position.x == cord_collapse.x) {
+						System.out.println(String.valueOf(balls.indexOf(ball, false)) + " " + String.valueOf(pos_collapse));
+//						Ball new_ball;
+//						new_ball= balls.get(pos_collapse+1);
+//						if (new_ball.ballSprite.getTexture().toString().equals(ball.ballSprite.getTexture().toString())){
+//							int left = pos_collapse;
+//							int right = pos_collapse;
+//							do{
+//								left--;
+//								new_ball= balls.get(left);
+//							}while (left > 0 && new_ball.ballSprite.getTexture().toString().equals(ball.ballSprite.getTexture().toString()));
+//							do{
+//								right++;
+//								new_ball= balls.get(right);
+//							}while  (new_ball.ballSprite.getTexture().toString().equals(ball.ballSprite.getTexture().toString()));
+//							if (right-left>=3){
+//								pos_collapse = left+1;
+//								cord_collapse = new Vector2(balls.get(right-1).position);
+//								balls.removeRange(left+1,right-1);
+//							}
+//							else{
+//								is_move_balls = true;
+//								cord_collapse = null;
+//								pos_collapse = - 1;
+//							}
+//						}
+//						else{
+//
+//							cord_collapse = null;
+//							pos_collapse = - 1;
+//						}
+//					}
+						is_move_balls = true;
+						ball.update();
 					}
-					ball.update();
-
 				}
 			ball.render(batch);
 			if (ShootBall!=null) {
@@ -132,59 +148,76 @@ public class Balls extends ApplicationAdapter {
 					is_move_balls = false;
 					pos_insert = new Vector2(ball.position);
 					int ball_pos = balls.indexOf(ball,false);
-					ShootBall.position.set(pos_insert.x,pos_insert.y);
-					ShootBall.ballSprite.setPosition(pos_insert.x,pos_insert.y);
-					ShootBall.velocity.set(0,0);
 					Ball new_ball = new Ball(path);
 					new_ball.ballSprite = new Sprite(second_ball);
 					new_ball.ballSprite.setSize(ball.ballSprite.getWidth(), ball.ballSprite.getHeight());
-					new_ball.position.set(ShootBall.position.x, ShootBall.position.y);
-					new_ball.set_velocity();
+					new_ball.position.set(pos_insert.x, pos_insert.y);
+					////////new_ball.set_velocity();
 					balls.insert(ball_pos,new_ball);
 					String shoot_tex = ShootBall.ballSprite.getTexture().toString();
 					ShootBall = null;
 					for(int i = ball_pos; i>=0;i--){
-						Vector2 speed = new Vector2(balls.get(i).velocity);
-						balls.get(i).position.add(speed.scl(30,30));
-						balls.get(i).ballSprite.setPosition(balls.get(i).position.x,balls.get(i).position.y);
-					}
-					new_ball = balls.get(ball_pos-1);
-					if (new_ball.ballSprite.getTexture().toString().equals(shoot_tex)){
-						new_ball = balls.get(ball_pos-2);
-						if (new_ball.ballSprite.getTexture().toString().equals(shoot_tex)){
-							pos_collapse = ball_pos-3;
-							cord_collapse = new Vector2(balls.get(ball_pos).position);
-							balls.removeRange(ball_pos-2,ball_pos);
-						}
-						else {
-							new_ball = balls.get(ball_pos+1);
-							if (new_ball.ballSprite.getTexture().toString().equals(shoot_tex)){
-								pos_collapse = ball_pos-2;
-								cord_collapse = new Vector2(balls.get(ball_pos+1).position);
-								balls.removeRange(ball_pos-1,ball_pos+1);
+						if (i!=1){
+							Ball current_ball = balls.get(i);
+							Ball next_ball = balls.get(i-1);
+							if (current_ball.velocity.isOnLine(next_ball.velocity)){
+								while (current_ball.position.x != next_ball.position.x){
+									current_ball.position.add(current_ball.velocity);
+									current_ball.next_velocity_position();
+								}
+								current_ball.ballSprite.setPosition(current_ball.position.x, current_ball.position.y);
+							}
+							else {
+								int current_vel_pos = current_ball.get_velocity_position();
+								int total_vel_pos = path.get_current_total_iterations(current_ball.get_current_iter());
+								while (current_vel_pos!=total_vel_pos){
+									current_ball.position.add(current_ball.velocity);
+									current_vel_pos++;
+								}
 							}
 						}
+//						Vector2 speed = new Vector2(balls.get(i).velocity);
+//						balls.get(i).position.add(speed.scl(30,30));
+//						balls.get(i).ballSprite.setPosition(balls.get(i).position.x,balls.get(i).position.y);
 					}
-					else {
-						new_ball = balls.get(ball_pos+1);
-						if (new_ball.ballSprite.getTexture().toString().equals(shoot_tex)){
-							new_ball = balls.get(ball_pos+2);
-							if (new_ball.ballSprite.getTexture().toString().equals(shoot_tex)){
-								pos_collapse = ball_pos-1;
-								cord_collapse = new Vector2(balls.get(ball_pos+2).position);
-								balls.removeRange(ball_pos,ball_pos+2);
-							}
-						}
-					}
-					if (pos_collapse!=-1){
-						pos_collapse++;
-						for(int i = pos_collapse; i>=0;i--){
-							Vector2 speed = new Vector2(balls.get(i).velocity);
-							balls.get(i).velocity.set(speed.rotate(180).scl(1.5f,1.5f));
-						}
-					}
-					else
-						is_move_balls = true;
+					is_move_balls = true;
+//					new_ball = balls.get(ball_pos-1);
+//					if (new_ball.ballSprite.getTexture().toString().equals(shoot_tex)){
+//						new_ball = balls.get(ball_pos-2);
+//						if (new_ball.ballSprite.getTexture().toString().equals(shoot_tex)){
+//							pos_collapse = ball_pos-3;
+//							cord_collapse = new Vector2(balls.get(ball_pos).position);
+//							balls.removeRange(ball_pos-2,ball_pos);
+//						}
+//						else {
+//							new_ball = balls.get(ball_pos+1);
+//							if (new_ball.ballSprite.getTexture().toString().equals(shoot_tex)){
+//								pos_collapse = ball_pos-2;
+//								cord_collapse = new Vector2(balls.get(ball_pos+1).position);
+//								balls.removeRange(ball_pos-1,ball_pos+1);
+//							}
+//						}
+//					}
+//					else {
+//						new_ball = balls.get(ball_pos+1);
+//						if (new_ball.ballSprite.getTexture().toString().equals(shoot_tex)){
+//							new_ball = balls.get(ball_pos+2);
+//							if (new_ball.ballSprite.getTexture().toString().equals(shoot_tex)){
+//								pos_collapse = ball_pos-1;
+//								cord_collapse = new Vector2(balls.get(ball_pos+2).position);
+//								balls.removeRange(ball_pos,ball_pos+2);
+//							}
+//						}
+//					}
+//					if (pos_collapse!=-1){
+//						pos_collapse++;
+//						for(int i = pos_collapse; i>=0;i--){
+//							Vector2 speed = new Vector2(balls.get(i).velocity);
+//							balls.get(i).velocity.set(speed.rotate(180).scl(1.5f,1.5f));
+//						}
+//					}
+//					else
+//						is_move_balls = true;
 				}
 			}
 		}
@@ -192,8 +225,9 @@ public class Balls extends ApplicationAdapter {
 			ShootBall.update();
 			ShootBall.render(batch);
 		}
-		if(is_move_balls && TimeUtils.nanoTime() - last_ball > 460000000)
+		if(is_move_balls && num_balls!=0 &&TimeUtils.nanoTime() - last_ball > 460000000){
 			spawn_ball();
+		}
 		batch.end();
 		if (Gdx.input.isTouched()) {
 			if (ShootBall!=null) {

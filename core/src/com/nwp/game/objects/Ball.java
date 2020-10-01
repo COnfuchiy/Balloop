@@ -13,38 +13,76 @@ public class Ball {
     private Path path;
     private int current_iter = 0;
     private int velocity_pos = 0;
+    private int direction = 1;
+
+    public Ball(Path Path) {
+        path = Path;
+    }
 
     public void render(SpriteBatch batch) {
         ballSprite.draw(batch);
     }
 
     public void set_velocity() {
-        Vector2 temp_velocity = path.get_velocity(velocity_pos, current_iter);
-        if (!temp_velocity.isOnLine(velocity)) {
-            velocity_pos++;
-            current_iter = 0;
+        if (direction == 1) {
+            Vector2 temp_velocity = path.get_normal_velocity(velocity_pos, current_iter);
+            if (!temp_velocity.isOnLine(velocity)) {
+                velocity_pos++;
+                current_iter = 0;
+            } else
+                current_iter += 1;
+            velocity = temp_velocity;
+        } else {
+            Vector2 temp_velocity = path.get_back_velocity(velocity_pos, current_iter);
+            if (!temp_velocity.isOnLine(velocity)) {
+                velocity_pos--;
+                current_iter = path.get_current_total_iterations(current_iter);
+            } else
+                current_iter -= path.get_current_back_acceleration();
+            velocity = temp_velocity.rotate(180).scl(path.get_current_back_acceleration());
         }
-        velocity = temp_velocity;
-        current_iter += 1;
-        /*velocity.set(0.9f, -1.9f);
-//        if (position.x>50 && velocity.x!=0.8f)
-//            velocity.set(0.8f, -1.9f);
-//        if (position.x>150 && velocity.x!=0.7f)
-//            velocity.set(0.7f, -1.9f);
-//        if (position.x>250 && velocity.x!=0.6f)
-//            velocity.set(0.6f, -1.9f);
-//        if (position.x>350 && velocity.x!=0.5f)
-//            velocity.set(0.5f, -1.9f);
-
-         */
     }
 
-    public Ball(Path Path) {
-        path = Path;
+    public void next_iteration(){
+        current_iter++;
+    }
+
+    public void next_velocity_position(){
+        velocity_pos++;
+    }
+
+    public int get_current_iter(){
+        return current_iter;
+    }
+
+    public int get_velocity_position(){
+        return velocity_pos;
+    }
+
+    public void collapse_move() {
+        direction = -1;
+    }
+
+    public void normal_move() {
+        direction = 1;
     }
 
     public void update() {
-        position.add(velocity);
+        if (current_iter < 0) {
+            int num_step_after = path.get_current_total_iterations(velocity_pos) - current_iter;
+            while (current_iter != 0) {
+                position.add(velocity);
+                current_iter++;
+            }
+            set_velocity();
+            while (num_step_after != 0) {
+                position.add(velocity);
+                current_iter--;
+                num_step_after--;
+            }
+        }
+        else
+            position.add(velocity);
         ballSprite.setPosition(position.x, position.y);
     }
 }
