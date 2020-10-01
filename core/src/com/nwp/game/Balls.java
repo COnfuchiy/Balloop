@@ -50,13 +50,13 @@ public class Balls extends ApplicationAdapter {
 		Array<Vector2> velocity = new Array<>();
 		Array<Integer> velocity_iter = new Array<>();
 		velocity.add(new Vector2(2, -2));
-		velocity.add(new Vector2(2.2f, -2));
-		velocity.add(new Vector2(2.3f, -2));
-		velocity.add(new Vector2(2.5f, -2));
-		velocity_iter.add(100);
-		velocity_iter.add(200);
-		velocity_iter.add(300);
+		velocity.add(new Vector2(1.2f, -2));
+		velocity.add(new Vector2(0.3f, -2));
+		velocity.add(new Vector2(-1.5f, -2));
 		velocity_iter.add(400);
+		velocity_iter.add(300);
+		velocity_iter.add(500);
+		velocity_iter.add(700);
 		return new Path(velocity, velocity_iter,2);
 	}
 
@@ -153,67 +153,58 @@ public class Balls extends ApplicationAdapter {
 					new_ball.ballSprite.setSize(ball.ballSprite.getWidth(), ball.ballSprite.getHeight());
 					new_ball.position.set(pos_insert.x, pos_insert.y);
 					new_ball.velocity = new Vector2(ball.velocity);
+					new_ball.set_current_iter(ball.get_current_iter());
+					new_ball.set_velocity_pos(ball.get_velocity_position());
 					balls.insert(ball_pos,new_ball);
 					String shoot_tex = ShootBall.ballSprite.getTexture().toString();
 					ShootBall = null;
-					int last_iter_count;
+					int last_iter_count = 0;
 					for(int i = ball_pos; i>=0;i--){
-						last_iter_count = 0;
 						Ball current_ball = balls.get(i);
 						if (i != 0){
+							last_iter_count = 0;
 							Ball next_ball = balls.get(i-1);
-							if (current_ball.velocity.isOnLine(next_ball.velocity)){
- 								while (current_ball.position.x != next_ball.position.x){
-									current_ball.position.add(current_ball.velocity);
-									current_ball.next_velocity_position();
-									last_iter_count++;
-								}
-								current_ball.ballSprite.setPosition(current_ball.position.x, current_ball.position.y);
-							}
-							else {
+							if (!current_ball.velocity.isOnLine(next_ball.velocity)) {
 								int current_vel_pos = current_ball.get_velocity_position();
 								int total_vel_pos = path.get_current_total_iterations(current_ball.get_current_iter());
-								while (current_vel_pos!=total_vel_pos){
+								while (current_vel_pos != total_vel_pos) {
 									current_ball.position.add(current_ball.velocity);
 									current_ball.next_velocity_position();
 									current_vel_pos++;
 									last_iter_count++;
 								}
 								current_ball.set_velocity();
-								while (current_ball.position.x != next_ball.position.x){
-									current_ball.position.add(current_ball.velocity);
-									current_ball.next_velocity_position();
-									last_iter_count++;
-								}
-								current_ball.ballSprite.setPosition(current_ball.position.x, current_ball.position.y);
 							}
+							while (current_ball.position.x != next_ball.position.x){
+								if (current_ball.position.x > next_ball.position.x){
+									System.out.println(current_ball.position.toString()+ "  "+next_ball.position.toString());
+									System.exit(0);
+								}
+							   current_ball.position.add(current_ball.velocity);
+							   current_ball.next_velocity_position();
+							   last_iter_count++;
+						   }
 						}
 						else {
 							int current_vel_pos = current_ball.get_velocity_position();
 							int total_vel_pos = path.get_current_total_iterations(current_ball.get_current_iter());
-							if (total_vel_pos - current_vel_pos >= last_iter_count) {
-								while (last_iter_count != 0){
-									current_ball.position.add(current_ball.velocity);
-									current_ball.next_velocity_position();
-									last_iter_count--;
-								}
-							}
-							else {
-								while (total_vel_pos - current_vel_pos != 0){
+							if (total_vel_pos - current_vel_pos < last_iter_count) {
+								while (total_vel_pos - current_vel_pos != 0) {
 									current_ball.position.add(current_ball.velocity);
 									current_ball.next_velocity_position();
 									current_vel_pos++;
 									last_iter_count--;
 								}
 								current_ball.set_velocity();
-								while (last_iter_count != 0){
-									current_ball.position.add(current_ball.velocity);
-									current_ball.next_velocity_position();
-									last_iter_count--;
-								}
-								current_ball.ballSprite.setPosition(current_ball.position.x, current_ball.position.y);
+
+							}
+							while (last_iter_count != 0){
+								current_ball.position.add(current_ball.velocity);
+								current_ball.next_velocity_position();
+								last_iter_count--;
 							}
 						}
+						current_ball.ballSprite.setPosition(current_ball.position.x, current_ball.position.y);
 //						Vector2 speed = new Vector2(balls.get(i).velocity);
 //						balls.get(i).position.add(speed.scl(30,30));
 //						balls.get(i).ballSprite.setPosition(balls.get(i).position.x,balls.get(i).position.y);

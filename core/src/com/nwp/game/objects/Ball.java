@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.nwp.game.source.Path;
 
 
-public class Ball {
+public class Ball implements Cloneable{
     public Vector2 position = new Vector2(); // вектор для обозначения позиции
     public Vector2 velocity = new Vector2(); // вектор для обозначения скорости
     public Sprite ballSprite;// спрайт для отображения мяча
@@ -59,6 +59,14 @@ public class Ball {
         return velocity_pos;
     }
 
+    public void set_velocity_pos(int velocity_pos) {
+        this.velocity_pos = velocity_pos;
+    }
+
+    public void set_current_iter(int current_iter){
+        this.current_iter = current_iter;
+    }
+
     public void collapse_move() {
         direction = -1;
     }
@@ -68,16 +76,16 @@ public class Ball {
     }
 
     public void update() {
-        if (current_iter < 0) {
-            int num_step_after = path.get_current_total_iterations(velocity_pos) - current_iter;
-            while (current_iter != 0) {
+        if (velocity_pos < 0) {
+            int num_step_after = path.get_current_total_iterations(velocity_pos) - velocity_pos;
+            while (velocity_pos != 0) {
                 position.add(velocity);
-                current_iter++;
+                velocity_pos++;
             }
             set_velocity();
             while (num_step_after != 0) {
                 position.add(velocity);
-                current_iter--;
+                velocity_pos--;
                 num_step_after--;
             }
         }
