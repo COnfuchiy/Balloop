@@ -152,18 +152,21 @@ public class Balls extends ApplicationAdapter {
 					new_ball.ballSprite = new Sprite(second_ball);
 					new_ball.ballSprite.setSize(ball.ballSprite.getWidth(), ball.ballSprite.getHeight());
 					new_ball.position.set(pos_insert.x, pos_insert.y);
-					////////new_ball.set_velocity();
+					new_ball.velocity = new Vector2(ball.velocity);
 					balls.insert(ball_pos,new_ball);
 					String shoot_tex = ShootBall.ballSprite.getTexture().toString();
 					ShootBall = null;
+					int last_iter_count;
 					for(int i = ball_pos; i>=0;i--){
-						if (i!=1){
-							Ball current_ball = balls.get(i);
+						last_iter_count = 0;
+						Ball current_ball = balls.get(i);
+						if (i != 0){
 							Ball next_ball = balls.get(i-1);
 							if (current_ball.velocity.isOnLine(next_ball.velocity)){
-								while (current_ball.position.x != next_ball.position.x){
+ 								while (current_ball.position.x != next_ball.position.x){
 									current_ball.position.add(current_ball.velocity);
 									current_ball.next_velocity_position();
+									last_iter_count++;
 								}
 								current_ball.ballSprite.setPosition(current_ball.position.x, current_ball.position.y);
 							}
@@ -172,8 +175,43 @@ public class Balls extends ApplicationAdapter {
 								int total_vel_pos = path.get_current_total_iterations(current_ball.get_current_iter());
 								while (current_vel_pos!=total_vel_pos){
 									current_ball.position.add(current_ball.velocity);
+									current_ball.next_velocity_position();
 									current_vel_pos++;
+									last_iter_count++;
 								}
+								current_ball.set_velocity();
+								while (current_ball.position.x != next_ball.position.x){
+									current_ball.position.add(current_ball.velocity);
+									current_ball.next_velocity_position();
+									last_iter_count++;
+								}
+								current_ball.ballSprite.setPosition(current_ball.position.x, current_ball.position.y);
+							}
+						}
+						else {
+							int current_vel_pos = current_ball.get_velocity_position();
+							int total_vel_pos = path.get_current_total_iterations(current_ball.get_current_iter());
+							if (total_vel_pos - current_vel_pos >= last_iter_count) {
+								while (last_iter_count != 0){
+									current_ball.position.add(current_ball.velocity);
+									current_ball.next_velocity_position();
+									last_iter_count--;
+								}
+							}
+							else {
+								while (total_vel_pos - current_vel_pos != 0){
+									current_ball.position.add(current_ball.velocity);
+									current_ball.next_velocity_position();
+									current_vel_pos++;
+									last_iter_count--;
+								}
+								current_ball.set_velocity();
+								while (last_iter_count != 0){
+									current_ball.position.add(current_ball.velocity);
+									current_ball.next_velocity_position();
+									last_iter_count--;
+								}
+								current_ball.ballSprite.setPosition(current_ball.position.x, current_ball.position.y);
 							}
 						}
 //						Vector2 speed = new Vector2(balls.get(i).velocity);

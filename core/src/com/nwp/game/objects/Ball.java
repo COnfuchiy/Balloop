@@ -27,18 +27,18 @@ public class Ball {
         if (direction == 1) {
             Vector2 temp_velocity = path.get_normal_velocity(velocity_pos, current_iter);
             if (!temp_velocity.isOnLine(velocity)) {
-                velocity_pos++;
-                current_iter = 0;
+                velocity_pos = 0;
+                current_iter++;
             } else
-                current_iter += 1;
+                velocity_pos += 1;
             velocity = temp_velocity;
         } else {
             Vector2 temp_velocity = path.get_back_velocity(velocity_pos, current_iter);
             if (!temp_velocity.isOnLine(velocity)) {
-                velocity_pos--;
-                current_iter = path.get_current_total_iterations(current_iter);
+                current_iter--;
+                velocity_pos = path.get_current_total_iterations(current_iter);
             } else
-                current_iter -= path.get_current_back_acceleration();
+                velocity_pos -= path.get_current_back_acceleration();
             velocity = temp_velocity.rotate(180).scl(path.get_current_back_acceleration());
         }
     }

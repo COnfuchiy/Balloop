@@ -30,7 +30,7 @@ public class Path {
     }
 
     public Vector2 get_normal_velocity(int velocity_pos, int current_iter) {
-        Velocity current_velocity = points.get(velocity_pos);
+        Velocity current_velocity = points.get(current_iter);
         if (current_iter == current_velocity.iterations_count)
             return points.get(velocity_pos + 1).velocity;
         else
