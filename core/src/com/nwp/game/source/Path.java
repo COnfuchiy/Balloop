@@ -32,7 +32,10 @@ public class Path {
     public Vector2 get_normal_velocity(int velocity_pos, int current_iter) {
         Velocity current_velocity = points.get(current_iter);
         if (velocity_pos == current_velocity.iterations_count)
-            return points.get(current_iter + 1).velocity;
+            if (current_iter + 1>=points.size)
+                return points.get(0).velocity;
+            else
+                return points.get(current_iter + 1).velocity;
         else
             return current_velocity.velocity;
     }
@@ -40,7 +43,10 @@ public class Path {
     public Vector2 get_back_velocity(int velocity_pos, int current_iter) {
         Velocity current_velocity = points.get(current_iter);
         if (velocity_pos == 0)
-            return points.get(current_iter - 1).velocity;
+            if (current_iter==0)
+                return points.get(points.size - 1).velocity;
+            else
+                return points.get(current_iter - 1).velocity;
         else
             return current_velocity.velocity;
     }
@@ -51,6 +57,17 @@ public class Path {
 
     public int get_current_total_iterations(int current_iter){
         return points.get(current_iter).iterations_count;
+    }
+
+    public boolean check_index(int current_iter, int direction){
+        if (direction==1)
+            return  current_iter < points.size-1;
+        else
+            return current_iter >0;
+    }
+
+    public int last_index(){
+        return points.size-1;
     }
 
 }

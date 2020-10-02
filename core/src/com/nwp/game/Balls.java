@@ -50,13 +50,13 @@ public class Balls extends ApplicationAdapter {
 		Array<Vector2> velocity = new Array<>();
 		Array<Integer> velocity_iter = new Array<>();
 		velocity.add(new Vector2(2, -2));
-		velocity.add(new Vector2(1.2f, -2));
-		velocity.add(new Vector2(0.3f, -2));
-		velocity.add(new Vector2(-1.5f, -2));
-		velocity_iter.add(400);
-		velocity_iter.add(300);
-		velocity_iter.add(500);
-		velocity_iter.add(700);
+		velocity.add(new Vector2(1.7f, -2));
+		velocity.add(new Vector2(1.4f, -2));
+		velocity.add(new Vector2(1.5f, 2));
+		velocity_iter.add(200);
+		velocity_iter.add(200);
+		velocity_iter.add(200);
+		velocity_iter.add(200);
 		return new Path(velocity, velocity_iter,2);
 	}
 
@@ -75,7 +75,7 @@ public class Balls extends ApplicationAdapter {
 			color_counter++;
 		ball.ballSprite = new Sprite(ballTexture);
 		ball.ballSprite.setSize(ball.ballSprite.getWidth(), ball.ballSprite.getHeight());
-		ball.position.set(0, height-ball.ballSprite.getHeight());
+		ball.position.set(300, height-ball.ballSprite.getHeight());
 		last_ball = TimeUtils.nanoTime();
 		balls.add(ball);
 		ball.velocity.set(2, -2);
@@ -177,7 +177,8 @@ public class Balls extends ApplicationAdapter {
 							}
 							while (current_ball.position.x != next_ball.position.x){
 								if (current_ball.position.x > next_ball.position.x){
-									System.out.println(current_ball.position.toString()+ "  "+next_ball.position.toString());
+									System.out.println(current_ball.position.toString()+ "  "+
+											next_ball.position.toString()+" " + Integer.toString(balls.indexOf(current_ball,false)));
 									System.exit(0);
 								}
 							   current_ball.position.add(current_ball.velocity);
@@ -188,7 +189,7 @@ public class Balls extends ApplicationAdapter {
 						else {
 							int current_vel_pos = current_ball.get_velocity_position();
 							int total_vel_pos = path.get_current_total_iterations(current_ball.get_current_iter());
-							if (total_vel_pos - current_vel_pos < last_iter_count) {
+							if (total_vel_pos - current_vel_pos <= last_iter_count) {
 								while (total_vel_pos - current_vel_pos != 0) {
 									current_ball.position.add(current_ball.velocity);
 									current_ball.next_velocity_position();

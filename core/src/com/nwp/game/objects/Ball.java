@@ -28,14 +28,20 @@ public class Ball implements Cloneable{
             Vector2 temp_velocity = path.get_normal_velocity(velocity_pos, current_iter);
             if (!temp_velocity.isOnLine(velocity)) {
                 velocity_pos = 0;
-                current_iter++;
+                if (path.check_index(current_iter,direction))
+                    current_iter++;
+                else
+                    current_iter = 0;
             } else
                 velocity_pos += 1;
             velocity = temp_velocity;
         } else {
             Vector2 temp_velocity = path.get_back_velocity(velocity_pos, current_iter);
             if (!temp_velocity.isOnLine(velocity)) {
-                current_iter--;
+                if (path.check_index(current_iter,direction))
+                    current_iter--;
+                else
+                    current_iter = path.last_index();
                 velocity_pos = path.get_current_total_iterations(current_iter);
             } else
                 velocity_pos -= path.get_current_back_acceleration();
