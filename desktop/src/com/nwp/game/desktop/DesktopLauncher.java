@@ -2,11 +2,11 @@ package com.nwp.game.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.nwp.game.Balls;
+import com.nwp.game.Game;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new Balls(), config);
+		new LwjglApplication(new Game(), config);
 	}
 }
