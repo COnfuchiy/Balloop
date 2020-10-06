@@ -18,6 +18,19 @@ public class Ball {
         position.set(-ballSprite.getWidth(),(float)y_level);
         this.velocity.set(velocity);
     }
+    public Ball(Texture texture, Vector2 velocity, int y_level, float device_width) {
+        ballSprite = new Sprite(texture);
+        ballSprite.setSize(ballSprite.getWidth(), ballSprite.getHeight());
+        position.set(device_width+ballSprite.getWidth(),(float)y_level);
+        this.velocity.set(velocity);
+    }
+
+    public Ball(Texture texture, Vector2 position){
+        ballSprite = new Sprite(texture);
+        ballSprite.setSize(ballSprite.getWidth(), ballSprite.getHeight());
+        this.position.set(position);
+        velocity.set(0,0);
+    }
 
     public void render(SpriteBatch batch) {
         ballSprite.draw(batch);

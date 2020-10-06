@@ -49,7 +49,7 @@ public class Game extends ApplicationAdapter {
 		textures.add(new Texture(Gdx.files.internal("ball.png")));
 		textures.add(new Texture(Gdx.files.internal("ball_1.png")));
 		textures.add(new Texture(Gdx.files.internal("ball_2.png")));
-		test_gutter = new Gutter(1000,2,12,34,width,textures);
+		test_gutter = new Gutter(1000,2,width,textures);
 	}
 
 	@Override
@@ -174,13 +174,7 @@ public class Game extends ApplicationAdapter {
 				Vector3 touchPos = new Vector3();
 				touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
 				camera.unproject(touchPos);
-				ShootBall = new Ball(new Texture(Gdx.files.internal("ball_1.png")),new Vector2(0,0),0);
-				ShootBall.position.set(touchPos.x, touchPos.y);
-//				arrow_Texture = new Texture(Gdx.files.internal("arrow.png"));
-//				arrow_sprite = new Sprite(arrow_Texture);
-//				arrow_sprite.setSize(arrow_sprite.getWidth(), arrow_sprite.getHeight());
-//				arrow_sprite.setPosition(touchPos.x, touchPos.y-arrow_sprite.getHeight());
-//				arrow_sprite.setOrigin(arrow_sprite.getWidth()/2, arrow_sprite.getHeight()/2);
+				ShootBall = new Ball(new Texture(Gdx.files.internal("ball_1.png")),new Vector2(touchPos.x, touchPos.y));
 				return false;
 			}
 			@Override
