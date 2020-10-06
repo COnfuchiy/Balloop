@@ -127,17 +127,23 @@ public class Gutter {
                     shoot_ball.position.set(0, 0);
                 }
             }
-            if (direction == 1 && ball.position.x >= device_width + ball.ballSprite.getWidth() ||
-                    direction == -1 && ball.position.x + ball.ballSprite.getWidth() <= 0) {
-                balls.removeValue(ball, false);
-            }
-            if (direction == 1 && ball.position.x >= length_btw_balls && ball.position.x < length_btw_balls + Math.abs(velocity.x) ||
-                    direction == -1 && ball.position.x + length_btw_balls >= device_width - Math.abs(velocity.x) &&
-                            ball.position.x + length_btw_balls < device_width) {
-                spawn_ball();
-            }
-            if (state.is_balls_move())
+
+            if (state.is_balls_move()){
+                if (direction == 1 && ball.position.x >= device_width + ball.ballSprite.getWidth() ||
+                        direction == -1 && ball.position.x + ball.ballSprite.getWidth() <= 0) {
+//                if (destroyed_balls_indexes.size!=0)
+//                    for (int i=0;i<destroyed_balls_indexes.size;i++){
+//                        destroyed_balls_indexes.set(i,destroyed_balls_indexes.get(i)-1);
+//                    }
+                    balls.removeValue(ball, false);
+                }
+                if (direction == 1 && ball.position.x >= length_btw_balls && ball.position.x < length_btw_balls + Math.abs(velocity.x) ||
+                        direction == -1 && ball.position.x + length_btw_balls >= device_width - Math.abs(velocity.x) &&
+                                ball.position.x + length_btw_balls < device_width) {
+                    spawn_ball();
+                }
                 ball.update();
+            }
             else {
                 if (state.is_insert_delay() && state.check_delay_counter()){
                     if (check_collapse(ball_collision_pos)) {
@@ -226,6 +232,9 @@ public class Gutter {
     private void collapse_balls() {
         int last_collapsed_index = destroyed_balls_indexes.get(0) - 1;
         if (last_collapsed_index >= 0) {
+            if (last_collapsed_index==balls.size){
+                System.out.println(1);
+            }
             Ball last_collapsed_ball = balls.get(last_collapsed_index);
             if (direction==1 && last_collapsed_ball.position.x + (float)back_velocity_mul * velocity.x<collapse_position.x ||
                     direction==0 && last_collapsed_ball.position.x + (float)back_velocity_mul * velocity.x>collapse_position.x
@@ -237,18 +246,21 @@ public class Gutter {
                     last_try_velocity_x-=collapse_position.x;
                 for (int i = last_collapsed_index; i >= 0; i--) {
                     balls.get(i).position.add(last_try_velocity_x,0);
+                    //balls.get(i).ballSprite.setPosition(balls.get(i).position.x, balls.get(i).position.y);
                 }
             }
             else{
                 for (int i = last_collapsed_index; i >= 0; i--) {
                     balls.get(i).position.add(new Vector2(velocity).rotate(180).scl(2));
+                    //balls.get(i).ballSprite.setPosition(balls.get(i).position.x, balls.get(i).position.y);
                 }
 
             }
-
+            if (balls.get(last_collapsed_index).position.x == collapse_position.x){
+                destroyed_balls_indexes.removeRange(0,destroyed_balls_indexes.size-1);
+                state.balls_move();
+            }
         }
-        if (balls.get(last_collapsed_index).position.x == collapse_position.x)
-            state.balls_move();
     }
 
     private void set_collapse_position() {
@@ -260,20 +272,16 @@ public class Gutter {
         destroyed_balls_indexes.sort();
         if (destroyed_balls_indexes.get(0) > 0 &&
                 check_balls_equals(destroyed_balls_indexes.get(0), destroyed_balls_indexes.get(0) - 1)) {
-            int left_edge_index = destroyed_balls_indexes.get(0) - 1;
-            do{
+            int left_edge_index = destroyed_balls_indexes.get(0);
+            while (left_edge_index > 0 && check_balls_equals(destroyed_balls_indexes.get(0), left_edge_index-1))
                 left_edge_index--;
-            } while (left_edge_index > 0 && check_balls_equals(destroyed_balls_indexes.get(0), left_edge_index));
-
             destroyed_balls_indexes.set(0, left_edge_index);
         }
         if (destroyed_balls_indexes.get(2) < balls.size &&
                 check_balls_equals(destroyed_balls_indexes.get(2), destroyed_balls_indexes.get(2) + 1)) {
-            int right_edge_index = destroyed_balls_indexes.get(2) + 1;
-            do{
+            int right_edge_index = destroyed_balls_indexes.get(2);
+            while (right_edge_index > 0 && check_balls_equals(destroyed_balls_indexes.get(0), right_edge_index+1))
                 right_edge_index++;
-            } while (right_edge_index > 0 && check_balls_equals(destroyed_balls_indexes.get(0), right_edge_index));
-
             destroyed_balls_indexes.set(2, right_edge_index);
         }
     }
@@ -291,13 +299,13 @@ public class Gutter {
                     destroyed_balls_indexes.add(start_ball_index, start_ball_index + 1, start_ball_index + 2);
                     return true;
                 } else if (start_ball_index > 0 && check_balls_equals(start_ball_index, start_ball_index - 1)) {
-                    destroyed_balls_indexes.add(start_ball_index, start_ball_index + 1, start_ball_index - 1);
+                    destroyed_balls_indexes.add(start_ball_index - 1,start_ball_index, start_ball_index + 1);
                     return true;
                 }
 
             } else if (start_ball_index > 1 && check_balls_equals(start_ball_index, start_ball_index - 1) &&
                     check_balls_equals(start_ball_index, start_ball_index - 2)) {
-                destroyed_balls_indexes.add(start_ball_index, start_ball_index - 1, start_ball_index - 2);
+                destroyed_balls_indexes.add( start_ball_index - 2, start_ball_index-1, start_ball_index);
                 return true;
             }
         }
