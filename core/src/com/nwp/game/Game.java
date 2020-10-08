@@ -49,7 +49,7 @@ public class Game extends ApplicationAdapter {
 		textures.add(new Texture(Gdx.files.internal("ball.png")));
 		textures.add(new Texture(Gdx.files.internal("ball_1.png")));
 		textures.add(new Texture(Gdx.files.internal("ball_2.png")));
-		test_gutter = new Gutter(1000,2,width,textures);
+		test_gutter = new Gutter(1000,2.5f,width,textures);
 	}
 
 	@Override

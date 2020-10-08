@@ -209,7 +209,7 @@ public class Gutter {
                     current_ball.position.add(current_ball.velocity);
             } else {
                 Vector2 tmp_position = new Vector2(current_ball.position);
-                while (current_ball.position.x != tmp_position.x + current_ball.ballSprite.getWidth() + length_btw_balls)
+                while (current_ball.position.x != tmp_position.x + direction*(current_ball.ballSprite.getWidth() + length_btw_balls))
                     current_ball.position.add(current_ball.velocity);
             }
             current_ball.ballSprite.setPosition(current_ball.position.x, current_ball.position.y);
@@ -229,13 +229,18 @@ public class Gutter {
         if (last_collapsed_index >= 0) {
             Ball last_collapsed_ball = balls.get(last_collapsed_index);
             if (direction == 1 && last_collapsed_ball.position.x + (float) back_velocity_mul * velocity.x < collapse_position.x ||
-                    direction == 0 && last_collapsed_ball.position.x + (float) back_velocity_mul * velocity.x > collapse_position.x
+                    direction == -1 && last_collapsed_ball.position.x - (float) back_velocity_mul * velocity.x > collapse_position.x
             ) {
-                float last_try_velocity_x = last_collapsed_ball.position.x + (float) back_velocity_mul * velocity.x;
-                if (direction == 1)
+                float last_try_velocity_x;
+                if (direction == 1){
+                    last_try_velocity_x= last_collapsed_ball.position.x + (float) back_velocity_mul * velocity.x;
                     last_try_velocity_x += collapse_position.x;
+                }
                 else
+                {
+                    last_try_velocity_x = last_collapsed_ball.position.x - (float) back_velocity_mul * velocity.x;
                     last_try_velocity_x -= collapse_position.x;
+                }
                 for (int i = last_collapsed_index; i >= 0; i--) {
                     balls.get(i).position.add(last_try_velocity_x, 0);
                     //balls.get(i).ballSprite.setPosition(balls.get(i).position.x, balls.get(i).position.y);
@@ -257,6 +262,11 @@ public class Gutter {
             }
 
         }
+        else{
+            destroyed_balls_indexes.removeRange(0, destroyed_balls_indexes.size - 1);
+            state.balls_move();
+        }
+
     }
 
     private void set_collapse_position() {
