@@ -24,7 +24,7 @@ class GutterState {
         general_state = STOP;
     }
 
-    public void set_insert_delay(int num_frames){
+    public void set_insert_delay(int num_frames) {
         delay_counter = num_frames;
         general_state = INSERT_DELAY;
     }
@@ -42,12 +42,12 @@ class GutterState {
         return general_state == STOP;
     }
 
-    public boolean is_insert_delay(){
-        return general_state==INSERT_DELAY;
+    public boolean is_insert_delay() {
+        return general_state == INSERT_DELAY;
     }
 
-    public boolean is_animate_delay(){
-        return general_state==ANIMATE_DELAY;
+    public boolean is_animate_delay() {
+        return general_state == ANIMATE_DELAY;
     }
 
     public boolean check_animate_counter() {
@@ -128,13 +128,9 @@ public class Gutter {
                 }
             }
 
-            if (state.is_balls_move()){
+            if (state.is_balls_move()) {
                 if (direction == 1 && ball.position.x >= device_width + ball.ballSprite.getWidth() ||
                         direction == -1 && ball.position.x + ball.ballSprite.getWidth() <= 0) {
-//                if (destroyed_balls_indexes.size!=0)
-//                    for (int i=0;i<destroyed_balls_indexes.size;i++){
-//                        destroyed_balls_indexes.set(i,destroyed_balls_indexes.get(i)-1);
-//                    }
                     balls.removeValue(ball, false);
                 }
                 if (direction == 1 && ball.position.x >= length_btw_balls && ball.position.x < length_btw_balls + Math.abs(velocity.x) ||
@@ -143,9 +139,8 @@ public class Gutter {
                     spawn_ball();
                 }
                 ball.update();
-            }
-            else {
-                if (state.is_insert_delay() && state.check_delay_counter()){
+            } else {
+                if (state.is_insert_delay() && state.check_delay_counter()) {
                     if (check_collapse(ball_collision_pos)) {
                         destroy_balls();
                         state.set_animate_counter(120);
@@ -232,34 +227,35 @@ public class Gutter {
     private void collapse_balls() {
         int last_collapsed_index = destroyed_balls_indexes.get(0) - 1;
         if (last_collapsed_index >= 0) {
-            if (last_collapsed_index==balls.size){
-                System.out.println(1);
-            }
             Ball last_collapsed_ball = balls.get(last_collapsed_index);
-            if (direction==1 && last_collapsed_ball.position.x + (float)back_velocity_mul * velocity.x<collapse_position.x ||
-                    direction==0 && last_collapsed_ball.position.x + (float)back_velocity_mul * velocity.x>collapse_position.x
-            ){
-                float last_try_velocity_x = last_collapsed_ball.position.x + (float)back_velocity_mul * velocity.x;
-                if (direction==1)
-                    last_try_velocity_x+=collapse_position.x;
+            if (direction == 1 && last_collapsed_ball.position.x + (float) back_velocity_mul * velocity.x < collapse_position.x ||
+                    direction == 0 && last_collapsed_ball.position.x + (float) back_velocity_mul * velocity.x > collapse_position.x
+            ) {
+                float last_try_velocity_x = last_collapsed_ball.position.x + (float) back_velocity_mul * velocity.x;
+                if (direction == 1)
+                    last_try_velocity_x += collapse_position.x;
                 else
-                    last_try_velocity_x-=collapse_position.x;
+                    last_try_velocity_x -= collapse_position.x;
                 for (int i = last_collapsed_index; i >= 0; i--) {
-                    balls.get(i).position.add(last_try_velocity_x,0);
+                    balls.get(i).position.add(last_try_velocity_x, 0);
                     //balls.get(i).ballSprite.setPosition(balls.get(i).position.x, balls.get(i).position.y);
                 }
-            }
-            else{
+            } else {
                 for (int i = last_collapsed_index; i >= 0; i--) {
                     balls.get(i).position.add(new Vector2(velocity).rotate(180).scl(2));
                     //balls.get(i).ballSprite.setPosition(balls.get(i).position.x, balls.get(i).position.y);
                 }
 
             }
-            if (balls.get(last_collapsed_index).position.x == collapse_position.x){
-                destroyed_balls_indexes.removeRange(0,destroyed_balls_indexes.size-1);
-                state.balls_move();
+            if (balls.get(last_collapsed_index).position.x == collapse_position.x) {
+                destroyed_balls_indexes.removeRange(0, destroyed_balls_indexes.size - 1);
+                for (int i = last_collapsed_index; i >= 0; i--) {
+                    balls.get(i).ballSprite.setPosition(balls.get(i).position.x, balls.get(i).position.y);
+                }
+                ball_collision_pos = last_collapsed_index;
+                state.set_insert_delay(120);
             }
+
         }
     }
 
@@ -273,14 +269,14 @@ public class Gutter {
         if (destroyed_balls_indexes.get(0) > 0 &&
                 check_balls_equals(destroyed_balls_indexes.get(0), destroyed_balls_indexes.get(0) - 1)) {
             int left_edge_index = destroyed_balls_indexes.get(0);
-            while (left_edge_index > 0 && check_balls_equals(destroyed_balls_indexes.get(0), left_edge_index-1))
+            while (left_edge_index > 0 && check_balls_equals(destroyed_balls_indexes.get(0), left_edge_index - 1))
                 left_edge_index--;
             destroyed_balls_indexes.set(0, left_edge_index);
         }
-        if (destroyed_balls_indexes.get(2) < balls.size &&
+        if (destroyed_balls_indexes.get(2) < balls.size-1 &&
                 check_balls_equals(destroyed_balls_indexes.get(2), destroyed_balls_indexes.get(2) + 1)) {
             int right_edge_index = destroyed_balls_indexes.get(2);
-            while (right_edge_index > 0 && check_balls_equals(destroyed_balls_indexes.get(0), right_edge_index+1))
+            while (right_edge_index < balls.size-1 && check_balls_equals(destroyed_balls_indexes.get(0), right_edge_index + 1))
                 right_edge_index++;
             destroyed_balls_indexes.set(2, right_edge_index);
         }
@@ -294,18 +290,18 @@ public class Gutter {
 
     private boolean check_collapse(int start_ball_index) {
         if (balls.size >= 4) {
-            if (check_balls_equals(start_ball_index, start_ball_index + 1)) {
-                if (check_balls_equals(start_ball_index, start_ball_index + 2)) {
+            if (start_ball_index<=balls.size-2 && check_balls_equals(start_ball_index, start_ball_index + 1)) {
+                if (start_ball_index<=balls.size-3 && check_balls_equals(start_ball_index, start_ball_index + 2)) {
                     destroyed_balls_indexes.add(start_ball_index, start_ball_index + 1, start_ball_index + 2);
                     return true;
                 } else if (start_ball_index > 0 && check_balls_equals(start_ball_index, start_ball_index - 1)) {
-                    destroyed_balls_indexes.add(start_ball_index - 1,start_ball_index, start_ball_index + 1);
+                    destroyed_balls_indexes.add(start_ball_index - 1, start_ball_index, start_ball_index + 1);
                     return true;
                 }
 
-            } else if (start_ball_index > 1 && check_balls_equals(start_ball_index, start_ball_index - 1) &&
+            } else if (start_ball_index<=balls.size-1 && start_ball_index > 1 && check_balls_equals(start_ball_index, start_ball_index - 1) &&
                     check_balls_equals(start_ball_index, start_ball_index - 2)) {
-                destroyed_balls_indexes.add( start_ball_index - 2, start_ball_index-1, start_ball_index);
+                destroyed_balls_indexes.add(start_ball_index - 2, start_ball_index - 1, start_ball_index);
                 return true;
             }
         }
