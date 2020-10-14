@@ -64,14 +64,9 @@ public class Game extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
 		background.draw(batch);
-		test_adapter.update_counters();
+		test_adapter.updates(batch);
 		test_gutter.render_gutter(batch,test_adapter.get_shoot_ball());
-		if (test_adapter.is_ball_shooting() && test_adapter.get_shoot_ball().position.x==0)
-			test_adapter.delete_ball();
-		if (test_adapter.is_ball_shooting()){
-			test_adapter.get_shoot_ball().update();
-			test_adapter.get_shoot_ball().render(batch);
-		}
+
 		batch.end();
 
 		Gdx.input.setInputProcessor(new InputAdapter(){

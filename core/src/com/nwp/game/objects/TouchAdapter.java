@@ -1,18 +1,21 @@
 package com.nwp.game.objects;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.nwp.game.Game;
 
-public class TouchAdapter {
+public class TouchAdapter implements YMoveBalls{
     private Array<Texture> textures;
+    private Array<Integer> y_levels;
 
     // pseudo random
     private Array<Integer> pseudo_random_indexes;
     private int pseudo_random_iterator = 0;
     private int pseudo_random_size_selection = 5;
 
+    private int active_level_index;
     private int default_touch_area;
     private int forbidden_touch_area;
     private int default_touch_delay;
@@ -24,8 +27,10 @@ public class TouchAdapter {
                         int default_touch_area,
                         int forbidden_touch_area,
                         int default_touch_delay,
+                        Array<Integer> all_y_levels,
                         float down_speed) {
         this.textures = textures;
+        y_levels = all_y_levels;
         this.default_touch_area = default_touch_area;
         this.forbidden_touch_area = forbidden_touch_area;
         this.default_touch_delay = default_touch_delay;
@@ -49,8 +54,18 @@ public class TouchAdapter {
         shoot_ball.velocity = new Vector2(0,down_speed);
     }
 
+    @Override
     public void delete_ball(){
         shoot_ball = null;
+    }
+
+    public int get_active_level(){
+        return active_level_index;
+    }
+
+    @Override
+    public boolean check_ball_dist(){
+        return shoot_ball.position.y - shoot_ball.ballSprite.getWidth() <= y_levels.get(active_level_index)+forbidden_touch_area;
     }
 
     // delay methods
@@ -70,8 +85,13 @@ public class TouchAdapter {
         return true;
     }
 
-    public void update_counters() {
+    @Override
+    public void updates(SpriteBatch batch) {
         //maybe something there or not
+        if (is_ball_shooting()){
+            shoot_ball.update();
+            shoot_ball.render(batch);
+        }
         if (touch_delay!=0)
             touch_delay--;
     }
@@ -114,12 +134,13 @@ public class TouchAdapter {
         }
     }
 
-    public void handle_touch(Vector2 touch_position, Array<Integer> all_y_levels) {
+    public void handle_touch(Vector2 touch_position) {
         if (check_delay()) {
             boolean possibility_shoot = false;
-            for (int level : all_y_levels)
+            for (int level : y_levels)
                 if (level - forbidden_touch_area <= touch_position.y && level + default_touch_area >= touch_position.y) {
                     possibility_shoot = true;
+                    active_level_index = y_levels.indexOf(level,false);
                     break;
                 }
             if (possibility_shoot)

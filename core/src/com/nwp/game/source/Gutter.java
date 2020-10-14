@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.nwp.game.Game;
 import com.nwp.game.objects.Ball;
+import com.nwp.game.objects.TouchAdapter;
 
 class GutterState {
     static final int MOVE = 1;
@@ -106,6 +107,10 @@ public class Gutter {
         spawn_ball();
     }
 
+    public int get_y_level(){
+        return y_level;
+    }
+
     public void spawn_ball() {
         Texture tmp_texture = three_ball_ahead.get(texture_index);
         texture_index++;
@@ -119,12 +124,13 @@ public class Gutter {
         }
     }
 
-    public void render_gutter(SpriteBatch batch, Ball shoot_ball) {
+    public void render_gutter(SpriteBatch batch, TouchAdapter adapter, boolean is_ball_near) {
+        Ball shoot_ball = adapter.get_shoot_ball();
         for (Ball ball : balls) {
-            if (shoot_ball != null) {
+            if (shoot_ball != null && is_ball_near) {
                 if (shoot_ball.position.x != 0 && state.is_balls_move() && ball.ballSprite.getBoundingRectangle().overlaps(shoot_ball.ballSprite.getBoundingRectangle())) {
                     handle_collision(shoot_ball, ball);
-                    shoot_ball.position.set(0, 0);
+                    adapter.delete_ball();
                 }
             }
 
