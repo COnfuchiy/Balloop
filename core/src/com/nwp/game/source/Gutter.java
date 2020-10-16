@@ -79,6 +79,8 @@ public class Gutter {
     private float device_width;
     private Array<Integer> destroyed_balls_indexes;
     private Vector2 collapse_position;
+    private boolean shoot_ball_collision = false;
+    private int collapsed_texture_index;
     private int ball_collision_pos;
     private int back_velocity_mul = 2;
 
@@ -124,13 +126,17 @@ public class Gutter {
         }
     }
 
-    public void render_gutter(SpriteBatch batch, TouchAdapter adapter, boolean is_ball_near) {
-        Ball shoot_ball = adapter.get_shoot_ball();
+    public void render_gutter(SpriteBatch batch, TouchAdapter adapter,AdditionalBall additionalBall, boolean is_ball_near) {
+        Ball shoot_ball = adapter.is_ball_shooting() ? adapter.get_shoot_ball() : additionalBall.get_additional_ball();
         for (Ball ball : balls) {
             if (shoot_ball != null && is_ball_near) {
                 if (shoot_ball.position.x != 0 && state.is_balls_move() && ball.ballSprite.getBoundingRectangle().overlaps(shoot_ball.ballSprite.getBoundingRectangle())) {
                     handle_collision(shoot_ball, ball);
-                    adapter.delete_ball();
+                    shoot_ball_collision = true;
+                    if (adapter.is_ball_shooting())
+                        adapter.delete_ball();
+                    else
+                        additionalBall.delete_ball();
                 }
             }
 
@@ -155,8 +161,13 @@ public class Gutter {
                     }
                 }
                 if (state.is_animate_delay() && state.check_animate_counter())
-                    collapse_balls();
+                    if (collapse_balls()){
+                        if (shoot_ball_collision && additionalBall.not_last_index(y_level))
+                            additionalBall.spawn_additional_ball(y_level,textures.get(collapsed_texture_index),collapse_position);
+                        shoot_ball_collision = false;
+                    }
             }
+
             ball.ballSprite.draw(batch);
         }
     }
@@ -226,11 +237,12 @@ public class Gutter {
     private void destroy_balls() {
         calculate_collapse_borders();
         set_collapse_position();
+        collapsed_texture_index = textures.indexOf(balls.get(destroyed_balls_indexes.get(0)).ballSprite.getTexture(),false);
         balls.removeRange(destroyed_balls_indexes.get(0), destroyed_balls_indexes.get(2));
         //animate?
     }
 
-    private void collapse_balls() {
+    private boolean collapse_balls() {
         int last_collapsed_index = destroyed_balls_indexes.get(0) - 1;
         if (last_collapsed_index >= 0) {
             Ball last_collapsed_ball = balls.get(last_collapsed_index);
@@ -265,16 +277,17 @@ public class Gutter {
                 }
                 ball_collision_pos = last_collapsed_index;
                 state.set_insert_delay(120);
+                return true;
             }
 
         }
         else{
             destroyed_balls_indexes.removeRange(0, destroyed_balls_indexes.size - 1);
             state.balls_move();
+            return true;
         }
-
+        return false;
     }
-
     private void set_collapse_position() {
         Ball right_ball = balls.get(destroyed_balls_indexes.get(2));
         collapse_position.set(right_ball.position);

@@ -11,21 +11,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.nwp.game.objects.Ball;
 import com.nwp.game.objects.TouchAdapter;
-import com.nwp.game.source.Gutter;
+import com.nwp.game.source.BallsActions;
 
 public class Game extends ApplicationAdapter {
 	SpriteBatch batch;
 	Array<Texture> textures;
-	private Gutter test_gutter;
 	static Texture second_ball;
-	static Sprite background;
-	private TouchAdapter test_adapter;
+	private TouchAdapter tmp_adapter;
+	private BallsActions main_actions;
 	OrthographicCamera camera;
 	private Array<Integer> y_levels;
-	int touch_x;
-	int touch_y;
 	float height;
 	float width;
 
@@ -44,18 +40,17 @@ public class Game extends ApplicationAdapter {
 		camera = new OrthographicCamera(width,height);// устанавливаем переменные высоты и ширины в качестве области просмотра нашей игры
 		camera.setToOrtho(false);// этим методом мы центруем камеру на половину высоты и половину ширины
 		batch = new SpriteBatch();
-		background = new Sprite(new Texture(Gdx.files.internal("gutter.png")));
-		background.setSize(background.getWidth(), background.getHeight());
-		background.setPosition(0,950);
 		y_levels = new Array<>();
-		y_levels.add(1000);
+		y_levels.add(800);
+		y_levels.add(1400);
+		Array<Float> velocities = new Array<>();
+		velocities.add(2.0f,3.0f);
 		textures = new Array<>();
 		textures.add(new Texture(Gdx.files.internal("ball.png")));
 		textures.add(new Texture(Gdx.files.internal("ball_1.png")));
 		textures.add(new Texture(Gdx.files.internal("ball_2.png")));
-		test_gutter = new Gutter(1000,2.5f,width,textures);
-		test_adapter = new TouchAdapter(textures,500,30,100,-10);
-
+		tmp_adapter = new TouchAdapter(textures,500,30,100,y_levels,-10);
+		main_actions = new BallsActions(y_levels, velocities,textures,tmp_adapter,width);
 	}
 
 	@Override
@@ -63,10 +58,8 @@ public class Game extends ApplicationAdapter {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
-		background.draw(batch);
-		test_adapter.updates(batch);
-		test_gutter.render_gutter(batch,test_adapter.get_shoot_ball());
-
+		tmp_adapter.updates(batch);
+		main_actions.balls_update(batch);
 		batch.end();
 
 		Gdx.input.setInputProcessor(new InputAdapter(){
@@ -75,7 +68,7 @@ public class Game extends ApplicationAdapter {
 				Vector3 touchPos = new Vector3();
 				touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
 				camera.unproject(touchPos);
-				test_adapter.handle_touch(new Vector2(touchPos.x, touchPos.y), y_levels);
+				tmp_adapter.handle_touch(new Vector2(touchPos.x, touchPos.y));
 				return false;
 			}
 		});

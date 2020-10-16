@@ -11,22 +11,36 @@ import com.nwp.game.objects.YMoveBalls;
 class AdditionalBall implements YMoveBalls {
     private Ball add_ball;
     private Array<Integer> y_levels;
-    private int hit_potential_level_index;
+    private int potential_level_index;
+    private float down_speed;
+    private int forbidden_touch_area;
 
-    public AdditionalBall(Array<Integer> all_y_levels){
+    public AdditionalBall(Array<Integer> all_y_levels,
+                          float down_speed,
+                          int forbidden_touch_area){
         y_levels = all_y_levels;
+        this.forbidden_touch_area = forbidden_touch_area;
+        this.down_speed = down_speed;
     }
 
-    public void spawn_additional_ball(int potential_level_index, Texture texture, Vector2 position, float down_speed){
-        
+    public void spawn_additional_ball(int potential_level,
+                                      Texture texture,
+                                      Vector2 position){
+        potential_level_index = y_levels.indexOf(potential_level,false)-1;
+        add_ball = new Ball(texture,new Vector2(position));
+        add_ball.velocity.set(new Vector2(0,down_speed));
     }
 
     public boolean is_additional_ball(){
         return add_ball!=null;
     }
 
-    public Ball additional_ball(){
+    public Ball get_additional_ball(){
         return add_ball;
+    }
+
+    public int get_potential_level_index(){
+        return y_levels.get(potential_level_index);
     }
 
     @Override
@@ -44,7 +58,12 @@ class AdditionalBall implements YMoveBalls {
 
     @Override
     public boolean check_ball_dist() {
-        return add_ball.position.y - add_ball.ballSprite.getWidth() <= y_levels.get(active_level_index)+forbidden_touch_area;
+        return add_ball.position.y - add_ball.ballSprite.getWidth() <= y_levels.get(potential_level_index)+forbidden_touch_area;
+    }
+
+    @Override
+    public boolean not_last_index(int level) {
+        return y_levels.indexOf(level,false)!=0;
     }
 }
 
@@ -52,14 +71,16 @@ public class BallsActions {
     private Array<Gutter> gutters;
     private float device_width;
     private TouchAdapter adapter;
+    private AdditionalBall additional_ball;
 
     public BallsActions(Array<Integer> y_levels,
-                        Array<Integer> levels_velocities,
+                        Array<Float> levels_velocities,
                         Array<Texture> united_textures,
                         TouchAdapter adapter,
                         float width){
         this.adapter = adapter;
         device_width = width;
+        additional_ball = new AdditionalBall(y_levels,adapter.get_down_speed(),adapter.get_forbidden_touch_area());
         gutters = new Array<>();
         for (int i=0;i<y_levels.size;i++)
             gutters.add(
@@ -68,14 +89,17 @@ public class BallsActions {
     }
 
     public void balls_update(SpriteBatch batch){
+
+        additional_ball.updates(batch);
         for (Gutter level : gutters){
             if (adapter.is_ball_shooting() && adapter.get_active_level()==level.get_y_level() && adapter.check_ball_dist())
-                level.render_gutter(batch, adapter.get_shoot_ball(),true);
-            else
-                level.render_gutter(batch, adapter.get_shoot_ball(),false);
+                level.render_gutter(batch, adapter,additional_ball,true);
+            else{
+                if (additional_ball.is_additional_ball() && additional_ball.get_potential_level_index()==level.get_y_level() && additional_ball.check_ball_dist())
+                    level.render_gutter(batch, adapter, additional_ball,true);
+                else
+                    level.render_gutter(batch, adapter, additional_ball,false);
+            }
         }
     }
-
-
-
 }

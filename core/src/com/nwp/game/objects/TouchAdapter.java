@@ -48,7 +48,7 @@ public class TouchAdapter implements YMoveBalls{
         return shoot_ball != null;
     }
 
-    private void spawn_shoot_ball(Vector2 touch_position) {
+    public void spawn_shoot_ball(Vector2 touch_position) {
         Texture ball_texture = get_random_ball_texture();
         shoot_ball = new Ball(ball_texture,new Vector2(touch_position));
         shoot_ball.velocity = new Vector2(0,down_speed);
@@ -60,12 +60,21 @@ public class TouchAdapter implements YMoveBalls{
     }
 
     public int get_active_level(){
-        return active_level_index;
+        return y_levels.get(active_level_index);
+    }
+
+    public int get_forbidden_touch_area(){
+        return forbidden_touch_area;
     }
 
     @Override
     public boolean check_ball_dist(){
         return shoot_ball.position.y - shoot_ball.ballSprite.getWidth() <= y_levels.get(active_level_index)+forbidden_touch_area;
+    }
+
+    @Override
+    public boolean not_last_index(int index) {
+        return index!=y_levels.size-1;
     }
 
     // delay methods
@@ -94,6 +103,10 @@ public class TouchAdapter implements YMoveBalls{
         }
         if (touch_delay!=0)
             touch_delay--;
+    }
+
+    public float get_down_speed(){
+        return down_speed;
     }
 
     // random texture method
