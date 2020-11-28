@@ -10,9 +10,14 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.utils.Array;
+import com.nwp.game.objects.GutterBar;
 import com.nwp.game.objects.TouchAdapter;
 import com.nwp.game.source.BallsActions;
+
+import java.util.concurrent.TimeUnit;
 
 public class Game extends ApplicationAdapter {
 	SpriteBatch batch;
@@ -22,6 +27,11 @@ public class Game extends ApplicationAdapter {
 	private BallsActions main_actions;
 	OrthographicCamera camera;
 	private Array<Integer> y_levels;
+	//***
+	GutterBar gutter_bar;
+	Stage stage;
+	private long lastUpdate = 0L;
+	//+++
 	float height;
 	float width;
 
@@ -44,13 +54,14 @@ public class Game extends ApplicationAdapter {
 		y_levels.add(800);
 		y_levels.add(1400);
 		Array<Float> velocities = new Array<>();
-		velocities.add(2.0f,3.0f);
+		velocities.add(1.5f,2.5f);
 		textures = new Array<>();
 		textures.add(new Texture(Gdx.files.internal("ball.png")));
 		textures.add(new Texture(Gdx.files.internal("ball_1.png")));
 		textures.add(new Texture(Gdx.files.internal("ball_2.png")));
+		stage = new Stage();
 		tmp_adapter = new TouchAdapter(textures,500,30,100,y_levels,-10);
-		main_actions = new BallsActions(y_levels, velocities,textures,tmp_adapter,width);
+		main_actions = new BallsActions(y_levels, velocities,textures,tmp_adapter,width,stage);
 	}
 
 	@Override
@@ -61,7 +72,8 @@ public class Game extends ApplicationAdapter {
 		tmp_adapter.updates(batch);
 		main_actions.balls_update(batch);
 		batch.end();
-
+		stage.draw();
+		stage.act();
 		Gdx.input.setInputProcessor(new InputAdapter(){
 			@Override
 			public boolean touchDown (int x, int y, int pointer, int button) {
@@ -76,7 +88,7 @@ public class Game extends ApplicationAdapter {
 	
 	@Override
 	public void dispose () {
+		stage.dispose();
 		batch.dispose();
-		second_ball.dispose();
 	}
 }

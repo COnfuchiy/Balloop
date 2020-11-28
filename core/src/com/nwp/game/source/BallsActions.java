@@ -3,6 +3,7 @@ package com.nwp.game.source;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.nwp.game.objects.Ball;
 import com.nwp.game.objects.TouchAdapter;
@@ -77,14 +78,15 @@ public class BallsActions {
                         Array<Float> levels_velocities,
                         Array<Texture> united_textures,
                         TouchAdapter adapter,
-                        float width){
+                        float width,
+                        Stage stage){
         this.adapter = adapter;
         device_width = width;
         additional_ball = new AdditionalBall(y_levels,adapter.get_down_speed(),adapter.get_forbidden_touch_area());
         gutters = new Array<>();
         for (int i=0;i<y_levels.size;i++)
             gutters.add(
-                    new Gutter(y_levels.get(i),levels_velocities.get(i),device_width,united_textures)
+                    new Gutter(y_levels.get(i),levels_velocities.get(i),device_width,united_textures,stage)
             );
     }
 

@@ -1,12 +1,44 @@
 package com.nwp.game.source;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.nwp.game.Game;
 import com.nwp.game.objects.Ball;
+import com.nwp.game.objects.GutterBar;
 import com.nwp.game.objects.TouchAdapter;
+
+class GutterLevelBarControl{
+    private GutterBar level_bar;
+    private int num_level_balls;
+    private float one_ball_value;
+
+    public GutterLevelBarControl(float device_width,
+                                 int height,
+                                 int y_position,
+                                 int num_level_balls,
+                                 Stage stage){
+        this.num_level_balls = num_level_balls;
+        one_ball_value = 100.0f/num_level_balls;
+        level_bar = new GutterBar((int)device_width,height,one_ball_value);
+        level_bar.setPosition(0, y_position-20);
+        stage.addActor(level_bar);
+    }
+
+    private float calc_balls_value(int num_balls){
+        return one_ball_value*num_balls;
+    }
+
+    public void set_bar_value(int num_balls){
+        if (level_bar.getValue()!=100.0f){
+            float added_value = calc_balls_value(num_balls);
+            level_bar.setValue(Math.min(level_bar.getValue() + added_value, 100.0f));
+        }
+    }
+}
 
 class GutterState {
     static final int MOVE = 1;
@@ -84,6 +116,13 @@ public class Gutter {
     private int ball_collision_pos;
     private int back_velocity_mul = 2;
 
+    //level bar vars
+
+    private Stage stage;
+    private GutterLevelBarControl level_bar_control;
+    private int num_level_balls = 60;
+    private int bar_height = 20;
+
     //random generation balls vars
     private int last_double_index = -1;
     private int texture_index = 0;
@@ -95,7 +134,8 @@ public class Gutter {
     public Gutter(int y_level,
                   float x_velocity,
                   float devise_width,
-                  Array<Texture> possible_level_textures) {
+                  Array<Texture> possible_level_textures,
+                  Stage stage) {
         this.y_level = y_level;
         this.direction = x_velocity > 0 ? 1 : -1;
         this.velocity = new Vector2(x_velocity, 0);
@@ -104,6 +144,8 @@ public class Gutter {
         this.set_three_next_texture();
         this.balls = new Array<>();
         this.destroyed_balls_indexes = new Array<>();
+        this.stage = stage;
+        level_bar_control = new GutterLevelBarControl(device_width,bar_height,y_level,num_level_balls,stage);
         collapse_position = new Vector2();
         state = new GutterState();
         spawn_ball();
@@ -155,6 +197,7 @@ public class Gutter {
                 if (state.is_insert_delay() && state.check_delay_counter()) {
                     if (check_collapse(ball_collision_pos)) {
                         destroy_balls();
+                        level_bar_control.set_bar_value(destroyed_balls_indexes.get(2)- destroyed_balls_indexes.get(0));
                         state.set_animate_counter(120);
                     } else {
                         state.balls_move();
