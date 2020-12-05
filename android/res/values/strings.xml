@@ -2,5 +2,5 @@
 <resources>
 
     <string name="app_name">NWP_game</string>
-
+    <string name="start_message">Press to start</string>
 </resources>
