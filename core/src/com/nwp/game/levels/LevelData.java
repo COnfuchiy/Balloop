@@ -17,14 +17,199 @@ public class LevelData {
         levels = new Array<>();
     }
     public void create_levels(){
-        levels.add(new Level(
-                "1",
-                false,
-                1,
-                new Array<Integer>(new Integer[]{1}),
-                new Array<Integer>(new Integer[]{45}),
-                new Array<Float>(new Float[]{1.0f}),
-                new Array<String>(new String[]{"ball_1","ball_2","ball_3","ball_4"})));
+        levels.addAll(
+                new Level(
+                        "1",
+                        false,
+                        1,
+                        new Array<Integer>(new Integer[]{1}),
+                        new Array<Integer>(new Integer[]{45}),
+                        new Array<Float>(new Float[]{1.0f}),
+                        new Array<String>(new String[]{"ball_1", "ball_2", "ball_3", "ball_4"})
+                ),
+                new Level(
+                        "2",
+                        false,
+                        1,
+                        new Array<Integer>(new Integer[]{1}),
+                        new Array<Integer>(new Integer[]{45}),
+                        new Array<Float>(new Float[]{1.0f}),
+                        new Array<String>(new String[]{"ball_1", "ball_2", "ball_3", "ball_4"})
+                ),
+                new Level(
+                        "3",
+                        false,
+                        1,
+                        new Array<Integer>(new Integer[]{1}),
+                        new Array<Integer>(new Integer[]{45}),
+                        new Array<Float>(new Float[]{1.0f}),
+                        new Array<String>(new String[]{"ball_1", "ball_2", "ball_3", "ball_4"})
+                ),
+                new Level(
+                        "4",
+                        false,
+                        1,
+                        new Array<Integer>(new Integer[]{1}),
+                        new Array<Integer>(new Integer[]{45}),
+                        new Array<Float>(new Float[]{1.0f}),
+                        new Array<String>(new String[]{"ball_1", "ball_2", "ball_3", "ball_4"})
+                ),
+                new Level(
+                        "5",
+                        false,
+                        1,
+                        new Array<Integer>(new Integer[]{1}),
+                        new Array<Integer>(new Integer[]{45}),
+                        new Array<Float>(new Float[]{1.0f}),
+                        new Array<String>(new String[]{"ball_1", "ball_2", "ball_3", "ball_4"})
+                ),
+                new Level(
+                        "1",
+                        false,
+                        1,
+                        new Array<Integer>(new Integer[]{1}),
+                        new Array<Integer>(new Integer[]{45}),
+                        new Array<Float>(new Float[]{1.0f}),
+                        new Array<String>(new String[]{"ball_1", "ball_2", "ball_3", "ball_4"})
+                ),
+                new Level(
+                        "1",
+                        false,
+                        1,
+                        new Array<Integer>(new Integer[]{1}),
+                        new Array<Integer>(new Integer[]{45}),
+                        new Array<Float>(new Float[]{1.0f}),
+                        new Array<String>(new String[]{"ball_1", "ball_2", "ball_3", "ball_4"})
+                ),
+                new Level(
+                        "1",
+                        false,
+                        1,
+                        new Array<Integer>(new Integer[]{1}),
+                        new Array<Integer>(new Integer[]{45}),
+                        new Array<Float>(new Float[]{1.0f}),
+                        new Array<String>(new String[]{"ball_1", "ball_2", "ball_3", "ball_4"})
+                ),
+                new Level(
+                        "1",
+                        false,
+                        1,
+                        new Array<Integer>(new Integer[]{1}),
+                        new Array<Integer>(new Integer[]{45}),
+                        new Array<Float>(new Float[]{1.0f}),
+                        new Array<String>(new String[]{"ball_1", "ball_2", "ball_3", "ball_4"})
+                ),
+                new Level(
+                        "1",
+                        false,
+                        1,
+                        new Array<Integer>(new Integer[]{1}),
+                        new Array<Integer>(new Integer[]{45}),
+                        new Array<Float>(new Float[]{1.0f}),
+                        new Array<String>(new String[]{"ball_1", "ball_2", "ball_3", "ball_4"})
+                ),
+                new Level(
+                        "1",
+                        false,
+                        1,
+                        new Array<Integer>(new Integer[]{1}),
+                        new Array<Integer>(new Integer[]{45}),
+                        new Array<Float>(new Float[]{1.0f}),
+                        new Array<String>(new String[]{"ball_1", "ball_2", "ball_3", "ball_4"})
+                ),
+                new Level(
+                        "1",
+                        false,
+                        1,
+                        new Array<Integer>(new Integer[]{1}),
+                        new Array<Integer>(new Integer[]{45}),
+                        new Array<Float>(new Float[]{1.0f}),
+                        new Array<String>(new String[]{"ball_1", "ball_2", "ball_3", "ball_4"})
+                ),
+                new Level(
+                        "1",
+                        false,
+                        1,
+                        new Array<Integer>(new Integer[]{1}),
+                        new Array<Integer>(new Integer[]{45}),
+                        new Array<Float>(new Float[]{1.0f}),
+                        new Array<String>(new String[]{"ball_1", "ball_2", "ball_3", "ball_4"})
+                ),
+                new Level(
+                        "1",
+                        false,
+                        1,
+                        new Array<Integer>(new Integer[]{1}),
+                        new Array<Integer>(new Integer[]{45}),
+                        new Array<Float>(new Float[]{1.0f}),
+                        new Array<String>(new String[]{"ball_1", "ball_2", "ball_3", "ball_4"})
+                ),
+                new Level(
+                        "1",
+                        false,
+                        1,
+                        new Array<Integer>(new Integer[]{1}),
+                        new Array<Integer>(new Integer[]{45}),
+                        new Array<Float>(new Float[]{1.0f}),
+                        new Array<String>(new String[]{"ball_1", "ball_2", "ball_3", "ball_4"})
+                ),
+                new Level(
+                        "1",
+                        false,
+                        1,
+                        new Array<Integer>(new Integer[]{1}),
+                        new Array<Integer>(new Integer[]{45}),
+                        new Array<Float>(new Float[]{1.0f}),
+                        new Array<String>(new String[]{"ball_1", "ball_2", "ball_3", "ball_4"})
+                ),
+                new Level(
+                        "1",
+                        false,
+                        1,
+                        new Array<Integer>(new Integer[]{1}),
+                        new Array<Integer>(new Integer[]{45}),
+                        new Array<Float>(new Float[]{1.0f}),
+                        new Array<String>(new String[]{"ball_1", "ball_2", "ball_3", "ball_4"})
+                ),
+                new Level(
+                        "1",
+                        false,
+                        1,
+                        new Array<Integer>(new Integer[]{1}),
+                        new Array<Integer>(new Integer[]{45}),
+                        new Array<Float>(new Float[]{1.0f}),
+                        new Array<String>(new String[]{"ball_1", "ball_2", "ball_3", "ball_4"})
+                ),
+                new Level(
+                        "1",
+                        false,
+                        1,
+                        new Array<Integer>(new Integer[]{1}),
+                        new Array<Integer>(new Integer[]{45}),
+                        new Array<Float>(new Float[]{1.0f}),
+                        new Array<String>(new String[]{"ball_1", "ball_2", "ball_3", "ball_4"})
+                ),
+                new Level(
+                        "1",
+                        false,
+                        1,
+                        new Array<Integer>(new Integer[]{1}),
+                        new Array<Integer>(new Integer[]{45}),
+                        new Array<Float>(new Float[]{1.0f}),
+                        new Array<String>(new String[]{"ball_1", "ball_2", "ball_3", "ball_4"})
+                )
+        );
+        levels.add(
+                new Level(
+                        "1",
+                        false,
+                        1,
+                        new Array<Integer>(new Integer[]{1}),
+                        new Array<Integer>(new Integer[]{45}),
+                        new Array<Float>(new Float[]{1.0f}),
+                        new Array<String>(new String[]{"ball_1", "ball_2", "ball_3", "ball_4"})
+                )
+        );
     }
 
     public Object get_level_field(int num_level, LevelField field){
@@ -50,6 +235,8 @@ public class LevelData {
         }
         return false;
     }
+
+    public Level getLevel(int index) { return levels.get(index); }
 
     public void set_level_completed(int num_level){
         levels.get(num_level).setIs_completed();

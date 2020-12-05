@@ -10,6 +10,7 @@ public class Level{
     private Array<Integer> gutters_num_balls;
     private Array<Float> gutters_velocities;
     private Array<String> ball_spites;
+    public boolean is_locked;
 
     public Level(String name,
                  boolean is_completed,
@@ -25,6 +26,7 @@ public class Level{
         this.gutters_num_balls = gutters_num_balls;
         this.gutters_velocities =gutters_velocities;
         this.ball_spites = ball_spites;
+        this.is_locked = false;
     }
 
     public String getName() {

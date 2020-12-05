@@ -14,7 +14,7 @@ public class File {
         Success,
         Error
     }
-    public static String filename = "/levels_data";
+    public static final String filename = "/levels_data";
     public static boolean isExtAvailable = Gdx.files.isExternalStorageAvailable();
     public static boolean isLocAvailable = Gdx.files.isLocalStorageAvailable();
     public static WritingResult WriteLine(String fileName, String line) {
