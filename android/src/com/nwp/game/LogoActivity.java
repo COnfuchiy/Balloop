@@ -8,7 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
-public class LogoActivity extends AppCompatActivity {
+public class LogoActivity extends AppCompatActivity implements View.OnClickListener{
+
+    CountDownTimer timer;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -19,7 +21,7 @@ public class LogoActivity extends AppCompatActivity {
                 | View.SYSTEM_UI_FLAG_FULLSCREEN);
         setContentView(R.layout.activity_logo);
 
-        new CountDownTimer(2 * 1000, 1000) {
+        timer = new CountDownTimer(2 * 1000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
 
@@ -34,5 +36,14 @@ public class LogoActivity extends AppCompatActivity {
     private void toMenu(){
         Intent intent = new Intent(this, StartActivity.class);
         startActivity(intent);
+        super.finish();
+    }
+
+    @Override
+    public void onClick(View v) {
+        timer.cancel();
+        Intent intent = new Intent(this, StartActivity.class);
+        startActivity(intent);
+        super.finish();
     }
 }

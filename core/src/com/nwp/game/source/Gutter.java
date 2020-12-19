@@ -38,6 +38,10 @@ class GutterLevelBarControl{
             level_bar.setValue(Math.min(level_bar.getValue() + added_value, 100.0f));
         }
     }
+
+    public boolean is_complete(){
+        return 100.0f==level_bar.getValue();
+    }
 }
 
 class GutterState {
@@ -134,12 +138,14 @@ public class Gutter {
     public Gutter(int y_level,
                   float x_velocity,
                   float devise_width,
+                  int num_level_balls,
                   Array<Texture> possible_level_textures,
                   Stage stage) {
         this.y_level = y_level;
         this.direction = x_velocity > 0 ? 1 : -1;
         this.velocity = new Vector2(x_velocity, 0);
         this.device_width = devise_width;
+        this.num_level_balls = num_level_balls;
         this.textures = possible_level_textures;
         this.set_three_next_texture();
         this.balls = new Array<>();
@@ -175,10 +181,12 @@ public class Gutter {
                 if (shoot_ball.position.x != 0 && state.is_balls_move() && ball.ballSprite.getBoundingRectangle().overlaps(shoot_ball.ballSprite.getBoundingRectangle())) {
                     handle_collision(shoot_ball, ball);
                     shoot_ball_collision = true;
-                    if (adapter.is_ball_shooting())
+                    if (adapter.is_ball_shooting()){
                         adapter.delete_ball();
-                    else
+                    }
+                    else{
                         additionalBall.delete_ball();
+                    }
                 }
             }
 
@@ -358,6 +366,10 @@ public class Gutter {
         Ball first_ball = balls.get(index_first);
         Ball second_ball = balls.get(index_second);
         return first_ball.ballSprite.getTexture().toString().equals(second_ball.ballSprite.getTexture().toString());
+    }
+
+    public boolean check_gutter_complete(){
+        return level_bar_control.is_complete();
     }
 
     private boolean check_collapse(int start_ball_index) {

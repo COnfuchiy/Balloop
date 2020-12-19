@@ -57,7 +57,7 @@ public class Level{
         return gutters_velocities;
     }
 
-    public void setIs_completed(){
-        is_completed = true;
+    public void setIs_completed(boolean value){
+        is_completed = value;
     }
 }

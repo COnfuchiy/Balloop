@@ -15,6 +15,8 @@ public class TouchAdapter implements YMoveBalls{
     private int pseudo_random_iterator = 0;
     private int pseudo_random_size_selection = 5;
 
+    private CurrentBallViewer ballViewer;
+
     private int active_level_index;
     private int default_touch_area;
     private int forbidden_touch_area;
@@ -39,6 +41,10 @@ public class TouchAdapter implements YMoveBalls{
         set_pseudo_random_textures();
     }
 
+    public void setCurrentBallViewer(CurrentBallViewer ballViewer) {
+        this.ballViewer = ballViewer;
+    }
+
     // shoot ball methods
     public Ball get_shoot_ball() {
         return shoot_ball;
@@ -49,7 +55,7 @@ public class TouchAdapter implements YMoveBalls{
     }
 
     public void spawn_shoot_ball(Vector2 touch_position) {
-        Texture ball_texture = get_random_ball_texture();
+        Texture ball_texture = get_current_ball_texture();
         shoot_ball = new Ball(ball_texture,new Vector2(touch_position));
         shoot_ball.velocity = new Vector2(0,down_speed);
     }
@@ -109,6 +115,10 @@ public class TouchAdapter implements YMoveBalls{
         return down_speed;
     }
 
+    public Texture get_current_ball_texture(){
+        return textures.get(pseudo_random_indexes.get(pseudo_random_iterator));
+    }
+
     // random texture method
     private Texture get_random_ball_texture() {
         pseudo_random_iterator++;
@@ -156,8 +166,10 @@ public class TouchAdapter implements YMoveBalls{
                     active_level_index = y_levels.indexOf(level,false);
                     break;
                 }
-            if (possibility_shoot)
+            if (possibility_shoot){
                 spawn_shoot_ball(touch_position);
+                ballViewer.setBallSprite(get_random_ball_texture());
+            }
             set_touch_delay();
         }
     }
